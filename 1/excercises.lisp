@@ -189,3 +189,39 @@
                       n-2))))
   (iter 2 1 0 3))
 
+; 12)
+
+(define (is-edge? row column)
+  (or (= column 0) (= row column)))
+
+(define (pascal-triangle-value row column) 
+  (if (is-edge? row column)
+    1
+    (+ (pascal-triangle-value (- row 1) column)
+       (pascal-triangle-value (- row 1) (- column 1)))))
+
+; 13)
+; This is so far over my head I will be skipping over it. Should revisit though...
+
+; 14)
+; (count-change 11)
+; (cc 11 5)
+; (+ (cc 11 4) (cc -39 5))
+; (+ (+ (cc 11 3) (cc -14 4)) 0)
+; (+ (+ (+ (cc 11 2) (cc 1 3))) 0)
+; (+ (+ (+ (+ (cc 11 1) (cc 6 2)) (+ (cc 1 2) (cc -9 3)))) 0)
+; (+ (+ (+ (+ (+ (cc 11 0) (cc 10 1)) (+ (cc 6 1) (cc 1 2)) (+ (+ (cc 1 1) (cc -4 2)) 0)))) 0)
+; (+ (+ (+ (+ (+ 0 (+ (cc 10 0) (cc 9 1))) (+ (+ (cc 6 0) (cc 5 1)) (+ (cc 1 1) (cc -4 2))) (+ (+ (+ (cc 1 0) (cc 0 1)) 0) 0)))) 0)
+
+; 15)
+
+(define (cube x) (* x x x))
+
+(define (p x) (- (* 3 x) (* 4 (cube x))))
+
+(define (sine angle)
+  (if (not (> (abs angle) 0.1))
+    angle
+    (p (sine (/ angle 3.0)))))
+; a) (sine 12.15) ~ 3 levels deep
+; b) linear recursive procedure -- linear steps, linear space
