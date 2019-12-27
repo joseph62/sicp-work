@@ -1,6 +1,6 @@
 ; 1)
 
-10 
+; (10)
 ; 10
 
 (+ 5 3 4)
@@ -82,3 +82,99 @@
 (test 0 (p))
 ; Applicative Order: (p) is evaluated first and recurses without stopping
 ; Normal Order: The arguments to test are applied to the underlying procedure and (p) is never evaluated
+
+; 6)
+(define (new-if predicate then-clause else-clause)
+  (cond (predicate then-clause)
+		(else else-clause)))
+; If new-if is used to implement the Newton approximation it will result in an infinite recursion because
+; the special form delays evaluation of expressions while this version does not.
+
+; 7)
+
+(define (new-good-enough? previous-guess current-guess)
+  (< (abs (- previous-guess current-guess)) 0.0001))
+
+; 8)
+(define (cube-root x) 
+  (cube-root-iter 0.0 1.0 x))
+
+(define (cube-root-iter previous-guess guess x)
+  (if (new-good-enough? previous-guess guess)
+	guess
+	(cube-root-iter guess (improve-cube guess x) x)))
+
+(define (improve-cube guess x)
+  (/ (+ (/ x (square guess))
+		(* 2 guess))
+	 3))
+
+; 9)
+
+(define (inc x)
+  (+ x 1))
+
+(define (dec x)
+  (- x 1))
+
+(define (+ a b) ; Recursive Process
+  (if (= a 0)
+	b
+	(inc (+ (dec a) b))))
+
+(+ 4 5)
+; (inc (+ 3 5))
+; (inc (inc (+ 2 5)))
+; (inc (inc (inc (+ 1 5))))
+; (inc (inc (inc (inc (+ 0 5)))))
+; (inc (inc (inc (inc (5)))))
+; (inc (inc (inc (6))))
+; (inc (inc (7)))
+; (inc (8))
+; (9)
+
+(define (++ a b) ; Iterative Process
+  (if (= a 0)
+	b
+	(++ (dec a) (inc b))))
+(++ 4 5)
+; (++ 3 6)
+; (++ 2 7)
+; (++ 1 8)
+; (++ 0 9)
+; (9)
+
+; 10)
+(define (A x y)
+  (cond ((= y 0) 0)
+		((= x 0) (* 2 y))
+		((= y 1) 2)
+		(else (A (- x 1)
+				 (A x (- y 1))))))
+(A 1 10)
+; 1024
+
+(A 2 4)
+; 65535
+
+(A 3 3)
+; 65535
+
+(define (f n) (A 0 n))
+; f(n) = 2n
+
+(define (g n) (A 1 n))
+; g(n) = 2^n
+
+(define (k n) (A 2 n))
+; k(n) = ???
+
+; 11)
+; f(n) = n if n < 3
+; f(n) = f(n-1) + 2f(n-2) + 3f(n-3) if n>=3
+(define (solution-11 n)
+  (cond ((< n 3) n)
+		(else (+ (solution-11 (- n 1))
+				 (* 2 (solution-11 (- n 2)))
+				 (* 3 (solution-11 (- n 3)))))))
+
