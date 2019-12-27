@@ -178,3 +178,14 @@
 				 (* 2 (solution-11 (- n 2)))
 				 (* 3 (solution-11 (- n 3)))))))
 
+(define (solution-11-2 n)
+  (define (iter n-1 n-2 n-3 counter)
+    (cond ((< n 3) n)
+          ((> counter n) n-1)
+          (else (iter (+ n-1
+                         (* 2 n-2)
+                         (* 3 n-3))
+                      n-1
+                      n-2))))
+  (iter 2 1 0 3))
+
