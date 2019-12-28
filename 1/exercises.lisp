@@ -370,3 +370,47 @@
   (= n (smallest-divisor n)))
 
 ; runtime does not work as expected so no benchmarking...
+
+; 24)
+
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+		((even? exp)
+		 (remainder (square (expmod base (/ exp 2) m))
+					m))
+		(else
+		  (remainder (* base (expmod base (- exp 1) m))
+					 m))))
+
+(define (fermat-test n)
+  (define (try-it a)
+	(= (expmod a n n) a))
+  (try-it (+ 1 (random (- n 1)))))
+
+(define (fast-prime? n times)
+  (cond ((= times 0) true)
+		((fermat-test n) (fast-prime? n (- times 1)))
+		(else false)))
+
+(define (timed-prime-test n)
+  (newline)
+  (display n)
+  (start-prime-test n (runtime)))
+
+(define (start-prime-test n start-time)
+  (if (fermat-test n)
+	(report-prime (- (runtime) start-time))))
+
+(define (report-prime elapsed-time)
+  (display "***")
+  (display elapsed-time))
+
+; 25)
+; Using the brief version of the expmod procedure results in very large calculations
+
+; 26)
+; Using the general multiplication method rather than the doubling method results in 
+; slightly worse performance because the doubling algorithm only needs to add the argument to itself
+; where the general procedure needs to do more computation
+
+; 27) - 28) skip for now
