@@ -414,3 +414,92 @@
 ; where the general procedure needs to do more computation
 
 ; 27) - 28) skip for now
+
+; 29)
+
+
+(define (simpson f a b n)
+  (define h (/ (- b a) n))
+  (define (simpson-coefficient k)
+    (cond ((= k 0) 1)
+          ((even? k) 2)
+          (else 4)))
+  (define (simpson-iter k)
+    (if (> k n)
+      0
+      (+ (* (simpson-coefficient k) (f (+ a (* k h)))) (simpson-iter (+ k 1)))))
+  (simpson-iter 0))
+
+; 30)
+
+(define (sum term a next b)
+  (define (iter a result)
+    (if (> a b)
+      result
+      (iter (next a) (+ result (term a)))))
+   (iter a 0))
+
+; 31)
+
+(define (product term a next b)
+  (if (> a b)
+    1
+    (* (term a) (product term (next a) next b))))
+
+(define (product-iter term a next b)
+  (define (iter a result)
+    (if (> a b)
+      1
+      (iter (next a) (* (term a) result))))
+  (iter a 1))
+
+(define (factorial n)
+  (define (next n) (+ n 1))
+  (product identity 1 next n))
+
+; 32)
+
+(define (accumulate combiner null-value term a next b)
+  (define (iter a total)
+    (if (> a b)
+      total
+      (iter (next a) (combiner (term a) total))))
+  (iter a null-value))
+
+
+(define (accumulate-recursive combiner null-value term a next b)
+  (if (> a b)
+    null-value
+    (combiner (term a) 
+              (accumulate-recursive combiner null-value term (next a) next b))))
+
+; 33)
+
+(define (inc n) (+ n 1))
+
+(define (filtered-accumulate predicate combiner null-value term a next b)
+  (define (iter a total)
+    (if (> a b)
+      total
+      (iter (next a)
+            (combiner (if (predicate (term a)) 
+                        (term a) 
+                        null-value)
+                      total))))
+  (iter a null-value))
+
+(define (sum-of-prime-squares a b)
+   (accumulate prime? + 0 square a inc b))
+
+(define (relative-prime-product n)
+  (define (relative-prime? m)
+    (= (gcd m n) 1))
+  (accumulate relative-prime? * 1 identity a inc b))
+
+                
+
+
+
+
+
+
