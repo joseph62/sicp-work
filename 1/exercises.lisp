@@ -225,3 +225,148 @@
     (p (sine (/ angle 3.0)))))
 ; a) (sine 12.15) ~ 3 levels deep
 ; b) linear recursive procedure -- linear steps, linear space
+
+; 16)
+(define (expt b n)
+  (define (iter a counter)
+	(cond ((= counter 1) a)
+		  ((even? counter) (iter (* a (square b)) (/ counter 2)))
+		  (else (iter (* a b) (- counter 1)))))
+  (iter 1 n))
+
+; 17)
+
+(define (double n) (+ n n))
+(define (halve n) (/ n 2)) ; cheatsy
+
+(define (mult a b) 
+  (if (= b 0)
+	0
+	(+ a (mult a (- b 1)))))
+
+(define (fast-mult a b)
+  (cond ((= b 0) 0)
+		((even? b) (double (fast-mult a (halve b))))
+		(else (+ a (fast-mult a (- b 1))))))
+
+; 18)
+
+(define (fast-iterative-mult a b)
+  (define (iter product counter)
+	(cond ((= counter 0) 0)
+		  ((even? counter) (iter (+ product (double a)) (halve counter)))
+		  (else (iter (+ product a) (- counter 1)))))
+  (iter 0 b))
+
+; 19)
+
+(define (fast-fib n)
+  (define (fast-fib-iter a b p q counter)
+	(cond ((= counter 0) b)
+		  ((even? counter)
+		   (fast-fib-iter a
+						  b ; Not quite sure about this, chief
+						  (
+						  ; 'q
+						  (/ counter 2)))
+		  (else (fast-fib-iter (+ (* b q) (* a q) (* a p))
+							   (+ (* b p) (* a q))
+							   p
+							   q
+							   (- counter 1)))))
+  (fast-fib-iter 1 0 0 1 n))
+
+; 20)
+
+(define (gcd a b)
+  (if (= b 0) 
+	a
+	(gcd b (remainder a b))))
+; Normal Order
+(gcd 206 40)
+(gcd 40 (remainder 206 40))
+; (= (remainder 206 40) 0) <-- 6
+(gcd (remainder 206 40) (remainder 40 (remainder 206 40)))
+; (= (remainder 40 (remainder 206 40)) 0) <--  4
+(gcd (remainder 40 (remainder 206 40)) (remainder (remainder 206 40) (remainder 40 (remainder 206 40))))
+; (= (remainder (remainder 206 40) (remainder 40 (remainder 206 40))) 0) 
+; (= (remainder 6 4) 0) <--- 2
+(gcd (remainder (remainder 206 40) (remainder 40 (remainder 206 40))) (remainder (remainder 40 (remainder 206 40)) (remainder (remainder 206 40) (remainder 40 (remainder 206 40)))))
+; (= (remainder (remainder 40 (remainder 206 40)) (remainder (remainder 206 40) (remainder 40 (remainder 206 40)))) 0)
+; (= (remainder 4 2) 0) <--- 0 TRUE
+(remainder (remainder 206 40) (remainder 40 (remainder 206 40)))
+; (remainder 6 (remainder 40 6))
+; (remainder 6 4)
+; 2
+
+; Applicative Order
+(gcd 206 40)
+; (= 40 0)
+(gcd 40 (remainder 206 40))
+(gcd 40 6)
+; (= 6 0)
+(gcd 6 (remainder 40 6))
+(gcd 6 4)
+; (= 4 0)
+(gcd 4 (remainder 6 4))
+(gcd 4 2)
+; (= 2 0)
+(gcd 2 (remainder 4 2))
+; (= 0 0)
+; 2
+
+; 22)
+
+(define (timed-prime-test n)
+  (newline)
+  (display n)
+  (start-prime-test n (runtime)))
+
+(define (start-prime-test n start-time)
+  (if (prime? n)
+	(report-prime (- (runtime) start-time))))
+
+(define (report-prime elapsed-time)
+  (display " *** ")
+  (display elapsed-time))
+
+(define (current-odd n) (if (even? n) (+ n 1) n))
+
+(define (search-for-primes start quantity)
+  (define (iter n q)
+	(cond ((= q quantity) q)
+		  ((prime? n) (timed-prime-test n) (iter (+ n 2) (+ q 1)))
+		  (else (iter (+ n 2) q))))
+  (iter (current-odd start) 0))
+
+; There does not seem to be a functioning runtime procedure
+
+(search-for-primes 1000 3)
+; 1009***0
+; 1013***0
+; 1019***0
+
+(search-for-primes 10000 3)
+; 10007***0
+; 10009***0
+; 10037***0
+
+; 23)
+
+(define (next n) (if (= n 2) 3 (+ n 2)))
+
+(define (smallest-divisor n)
+  (find-divisor n 2))
+
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+		((divides? test-divisor n) test-divisor)
+		(else (find-divisor n (next test-divisor)))))
+
+(define (divides? a b)
+  (= (remainder b a) 0))
+
+(define (prime? n)
+  (= n (smallest-divisor n)))
+
+; runtime does not work as expected so no benchmarking...
