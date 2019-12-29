@@ -496,10 +496,117 @@
     (= (gcd m n) 1))
   (accumulate relative-prime? * 1 identity a inc b))
 
-                
+; 34)
+
+(define (f g)
+  (g 2))
+
+(f square)
+; 2
+
+(f (lambda (x) (* x (+ x 1))))
+; 6
+
+(f f)
+; (f 2)
+; (2 2)
+; There is no procedure named 2. error
+
+; 35)
+(fixed-point (lambda (x) (+ 1 (/ 1 x))) 1.0)
+; 1.61803278
+
+; 36)
+(print-fixed-point (lambda (x) (/ (log 1000) (log x))) 1.1)
+
+; about 35 iterations before returning
+
+; 37)
+(define (cont-frac n d k)
+  (define (recurse i)
+	(if (= i k)
+	  (/ (n i) (d i))
+	  (/ (n i) (+ (d i) (recurse (+ i 1))))))
+  (recurse 0))
+
+(define (cont-frac-iter n d k)
+  (define (iter i total)
+	(if (= i 0)
+	  total
+	  (iter (- i 1) (/ (n i) (+ (d i) total)))))
+  (iter k 0))
 
 
+; 38)
+(define e (cont-frac (lambda (i) 1.0)
+					 (lambda (i)
+					   (cond ((= i 1) 1)
+							 ((= (remainder i 3) 2) (* 2 (+ (quotient i 3) 1)))
+							 (else 1)))
+					 1000))
 
+; 39
+(define (tan angle k)
+  (cont-frac (lambda (i) 
+			   (if (= i 1) 
+				 x 
+				 (square x)))
+			 (lambda (i) (- (* i 2) 1))
+			 k))
 
+; 40)
+(define (cubic a b c)
+  (lambda (x) (+ (* x x x)
+				 (* a x x)
+				 (* b x)
+				 c)))
 
+; 41)
 
+(define (double f)
+  (lambda (x) (f (f x))))
+ 
+; 42)
+(define (compose f g)
+  (lambda (x) (f (g x))))
+
+(define (double f)
+  (compose f f))
+
+; 43)
+(define (repeated f n)
+  (if (= n 0)
+	f
+	(compose f (repeated f (- n 1)))))
+
+(define (repeated-iter f n)
+  (define (iter i g)
+	(if (> i n)
+	  g
+	  (iter (+ i 1) (compose f g))))
+  (iter 0 f))
+
+; 44)
+(define (average-3 a b c) (/ (+ a b c) 3))
+(define (smooth f)
+  (define dx 0.0001)
+  (lambda (x) (average-3 (f (- x dx)) (f x) (f (+ x dx)))))
+
+(define (smooth-n f n)
+  ((repeated smooth n) f))
+
+; 45)
+; -- Yikes, I don't know...
+
+; 46)
+(define (iterative-improve good-guess? improve-guess)
+  (define (iter guess)
+	(if (good-guess? guess)
+	  guess
+	  (iter (improve-guess guess)))))
+
+(define (sqrt x)
+  ((iterative-improve (lambda (guess)
+						(< (abs (- (square guess) x)) 0.001))
+					  (lambda (guess)
+						(average guess (/ x guess)))) 1.0))
