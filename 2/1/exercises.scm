@@ -34,6 +34,16 @@
               (average (y-point (start-point segment))
                        (y-point (end-point segment)))))
 
+(define (hypotenuse a b)
+  (sqrt (+ (square a)
+           (square b))))
+
+(define (segment-length segment)
+  (hypotenuse (- (x-point (start-point segment))
+                 (x-point (end-point segment))))
+              (- (y-point (start-point segment))
+                 (y-point (end-point segment))))
+
 (define (print-point point)
   (newline)
   (display "(")
@@ -54,4 +64,53 @@
           (cons (make-point bottom-y top-x)
                 (make-point top-y top-x)))))
 
+(define (rectangle-area rectangle)
+  (* (rectangle-width rectangle)
+     (rectangle-height rectangle)))
 
+(define (rectangle-perimeter rectangle)
+  (+ (* 2 (rectangle-width rectangle))
+     (* 2 (rectangle-height rectangle))))
+
+(define (rectangle-width rectangle)
+  (segment-length (make-segment (x-point (car (car rectangle)))
+                                (x-point (cdr (car rectangle))))))
+
+(define (rectangle-height rectangle)
+  (segment-length (make-segment (y-point (car (car rectangle)))
+                                (y-point (car (cdr rectangle))))))
+
+
+(define (make-rectangle point-a point-b)
+  (let ((top-y (max (y-point point-a) (y-point point-b)))
+        (bottom-y (min (y-point point-a) (y-point point-b)))
+        (top-x (max (x-point point-a) (x-point point-b)))
+        (bottom-x (min (x-point point-a) (x-point point-b))))
+    (cons (make-segment (make-point bottom-y bottom-x) 
+                        (make-point top-y bottom-x))
+          (make-segment (make-point bottom-y top-x)
+                        (make-point top-y top-x)))))
+
+(define (rectangle-area rectangle)
+  (* (rectangle-width rectangle)
+     (rectangle-height rectangle)))
+
+(define (rectangle-perimeter rectangle)
+  (+ (* 2 (rectangle-width rectangle))
+     (* 2 (rectangle-height rectangle))))
+
+(define (rectangle-width rectangle)
+  (segment-length (car rectangle))
+
+(define (rectangle-height rectangle)
+  (segment-length (cdr rectangle))
+
+
+
+(define (rectangle-area rectangle)
+  (* (rectangle-width rectangle)
+     (rectangle-height rectangle)))
+
+(define (rectangle-perimeter rectangle)
+  (+ (* 2 (rectangle-width rectangle))
+     (* 2 (rectangle-height rectangle))))
