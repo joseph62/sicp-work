@@ -100,10 +100,10 @@
      (* 2 (rectangle-height rectangle))))
 
 (define (rectangle-width rectangle)
-  (segment-length (car rectangle))
+  (segment-length (car rectangle)))
 
 (define (rectangle-height rectangle)
-  (segment-length (cdr rectangle))
+  (segment-length (cdr rectangle)))
 
 
 
@@ -114,3 +114,39 @@
 (define (rectangle-perimeter rectangle)
   (+ (* 2 (rectangle-width rectangle))
      (* 2 (rectangle-height rectangle))))
+
+; 4)
+
+(define (cons x y)
+  (lambda (m) (m x y)))
+
+(define (car pair)
+  (pair (lambda (x y) x)))
+
+(define (cdr pair)
+  (pair (lambda (x y) y)))
+
+; 5)
+
+(define (divisible? x y)
+  (= (remainder x y) 0))
+
+(define (inc x) (+ x 1))
+
+(define (cons x y)
+  (* (expt 2 x) (expt 3 y)))
+
+(define (car pair)
+  (define (iter total pair)
+	(if (divisible? pair 2)
+		(iter (inc total) (/ pair 2))
+		total))
+  (iter 0 pair))
+
+(define (cdr pair)
+  (define (iter total pair)
+	(if (divisible? pair 3)
+		(iter (inc total) (/ pair 3))
+		total))
+  (iter 0 pair))
+
