@@ -212,7 +212,7 @@
       (zero? (upper-bound a))))
 
 (define (div-interval x y)
-  (if (inteval-contains-zero? y)
+  (if (interval-contains-zero? y)
     (error "The divisor interval cannot contain zero!")
     (mul-interval x
                   (make-interval (/ 1.0 (upper-bound y))
@@ -264,4 +264,100 @@
 ; 13) 
 ; <huge shrug of shoulders>
 
+; 14)
+(define a (make-interval 1 2))
+(define b (make-interval 3 4))
 
+(define (par1 r1 r2)
+  (div-interval (mul-interval r1 r2)
+                (add-interval r1 r2)))
+
+(par1 a b)
+
+(div-interval (mul-interval a b)
+              (add-interval a b))
+
+(mul-interval (mul-interval a b)
+              (make-interval (/ 1.0 (upper-bound (add-interval a b)))
+                             (/ 1.0 (lower-bound (add-interval a b)))))
+
+(mul-interval (mul-interval a b)
+              (make-interval (/ 1.0 
+                                (upper-bound (make-interval (+ (lower-bound a)
+                                                               (lower-bound b))
+                                                            (+ (upper-bound a)
+                                                               (upper-bound b))))))
+                             (/ 1.0 
+                                (lower-bound (make-interval (+ (lower-bound a)
+                                                               (lower-bound b))
+                                                            (+ (upper-bound a)
+                                                               (upper-bound b))))))
+
+(mul-interval (let ((p1 (* (lower-bound a) (lower-bound b)))
+                    (p2 (* (lower-bound a) (upper-bound b)))
+                    (p3 (* (upper-bound a) (lower-bound b)))
+                    (p4 (* (upper-bound a) (upper-bound b))))
+                (make-interval (min p1 p2 p3 p4)
+                               (max p1 p2 p3 p4)))
+              (make-interval (/ 1.0 
+                                (upper-bound (make-interval (+ (lower-bound a)
+                                                               (lower-bound b))
+                                                            (+ (upper-bound a)
+                                                               (upper-bound b))))))
+                             (/ 1.0 
+                                (lower-bound (make-interval (+ (lower-bound a)
+                                                               (lower-bound b))
+                                                            (+ (upper-bound a)
+                                                               (upper-bound b))))))
+
+(mul-interval (let ((p1 (* (1) (3)))
+                    (p2 (* (1) (4)))
+                    (p3 (* (2) (3)))
+                    (p4 (* (2) (4))))
+                (make-interval (min p1 p2 p3 p4)
+                               (max p1 p2 p3 p4)))
+              (make-interval (/ 1.0 
+                                (upper-bound (make-interval (+ (1)
+                                                               (3))
+                                                            (+ (2)
+                                                               (4))))))
+                             (/ 1.0 
+                                (lower-bound (make-interval (+ (1)
+                                                               (3))
+                                                            (+ (2)
+                                                               (4))))))
+
+(mul-interval (let ((p1 3)
+                    (p2 4)
+                    (p3 6)
+                    (p4 8))
+                (make-interval (min p1 p2 p3 p4)
+                               (max p1 p2 p3 p4)))
+              (make-interval (/ 1.0 
+                                (upper-bound (make-interval 4 6)))
+                             (/ 1.0 
+                                (lower-bound (make-interval 4 6)))))
+
+
+(mul-interval (make-interval 3 8)
+              (make-interval (/ 1.0 6)
+                             (/ 1.0 4)))
+
+(let ((p1 (/ 1.0 2))
+      (p2 (/ 3.0 4))
+      (p3 (/ 4.0 3))
+      (p4 2))
+  (make-interval (min p1 p2 p3 p4)
+                 (max p1 p2 p3 p4)))
+
+
+
+
+
+(define (par2 r1 r2)
+  (let ((one (make-interval 1 1)))
+    (div-interval one
+                  (add-interval (div-interval one r1)
+                                (div-interval one r2)))))
+
+; yikes
