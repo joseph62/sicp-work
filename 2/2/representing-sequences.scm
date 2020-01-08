@@ -33,3 +33,19 @@
   (if (null? list1)
     list2
     (cons (car list1) (append (cdr list1) list2))))
+
+(define (scale-list items factor)
+  (if (null? items)
+    ()
+    (cons (* (car items) factor)
+          (scale-list (cdr items) factor))))
+
+(define (scale-list items factor)
+  (map (lambda (x) (* x factor)) 
+       items))
+
+(define (map proc items)
+  (if (null? items)
+    ()
+    (cons (proc (car items))
+          (map proc (cdr items)))))
