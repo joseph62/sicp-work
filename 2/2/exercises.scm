@@ -49,3 +49,86 @@
                                           (iter (cdr numbers))))
             (else (iter (cdr numbers)))))
     (cons first (iter rest))))
+
+; 21)
+
+(define (square-list numbers)
+  (if (null? numbers) 
+    () 
+    (cons (square (car numbers)) 
+          (square-list (cdr numbers)))))
+
+(define (square-list numbers)
+  (map square numbers))
+
+; 22)
+
+(define (square-list items)
+  (define (iter things answer)
+    (if (null? things)
+      answer
+      (iter (cdr things) 
+            (cons (square (car things))
+                  answer))))
+  (iter items ()))
+
+; (square-list (list 1 2 3))
+; (iter (1 2 3) ())
+; (iter (2 3) (cons (square 1) ()))
+; (iter (3) (cons 2 (1)))
+; (iter () (cons 3 (2 1)))
+; (3 2 1)
+; As this procedure processes items it adds them to the start of the list.
+; This results in a reversed list in the end.
+
+(define (square-list items)
+  (define (iter things answer)
+    (if (null? things)
+      answer
+      (iter (cdr things)
+            (cons answer
+                  (square (car things))))))
+  (iter items ()))
+
+; (square-list (list 1 2 3))
+; (iter (2 3) (cons () 1))
+; (iter (3) (cons (() . 1) 2))
+; (iter () (cons ((() . 1) . 2) 3))
+; (((() . 1) . 2) . 3)
+; This solution creates a pair of the previous iteration and the next iteration.
+
+; Correct solution would be:
+; (1 . ())
+; (1 . (2 . ()))
+; (1 . (2 . (3 . ())))
+; Must be able to add a pair on to the end of the list
+
+(define (square-list items)
+  (define (iter things answer)
+    (if (null? things)
+      answer
+      (iter (cdr things)
+            (append answer (list (car things))))))
+  (iter items ()))
+
+; OR
+
+(define (square-list items)
+  (define (iter things answer)
+    (if (null? things)
+      answer
+      (iter (cdr things)
+            (cons answer
+                  (square (car things))))))
+  (reverse (iter items ())))
+
+; 23)
+
+(define (for-each f items)
+  (if (null? items)
+    #t
+    (or (and (f (car items)) #f)
+        (for-each f (cdr items)))))
+
+
+
