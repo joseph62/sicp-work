@@ -131,4 +131,153 @@
         (for-each f (cdr items)))))
 
 
+; 24)
 
+(list 1 (list 2 (list 3 4)))
+; (1 (2 (3 4)))
+; |1| | -> | |nil| 
+;		    \---> |2| | -> | |nil|
+;                            \---> |3| | -> |4|nil|
+
+; 25)
+(define a (list 1 3 (list 5 7) 9))
+(= 7 (cadr (caddr a)))
+(define b (list (list 7)))
+(= 7 (caar b))
+(define c (list 1 (list 2 (list 3 (list 4 (list 5 (list 6 7)))))))
+(= 7 (cadr (cadr (cadr (cadr (cadr (cadr c)))))))
+
+; 26)
+(define x (list 1 2 3))
+(define y (list 4 5 6))
+
+(append x y)
+; (1 2 3 4 5 6)
+(cons x y)
+; ((1 2 3) . (4 5 6))
+(list x y)
+;((1 2 3) (4 5 6))
+
+; 27)
+
+(define (deep-reverse items)
+  (cond ((null? items)  ())
+		((list? items) (map deep-reverse (reverse items)))
+		((pair? items) (cons (deep-reverse (car items)) 
+							 (deep-reverse (cdr items))))
+		(else items)))
+
+
+; 28)
+(define (fringe tree)
+  (cond ((null? tree) ())
+		((not (pair? tree)) (list tree))
+		(else (append (fringe (car tree)) 
+					  (fringe (cdr tree))))))
+
+; 29)
+
+(define (make-mobile left right)
+  (list left right))
+
+(define (left-branch m)
+  (car m))
+
+(define (right-branch m)
+  (cadr m))
+
+(define (mobile? m)
+  (and (pair? m)
+	   (branch? (left-branch m))
+	   (branch? (right-branch m))))
+
+(define (make-branch length structure)
+  (list length structure))
+
+(define (branch-length b)
+  (car b))
+
+(define (branch-structure b)
+  (cadr b))
+
+(define (simple-branch? b)
+  (and (pair? b)
+	   (number? (branch-length b))
+	   (number? (branch-structure b))))
+
+(define (mobile-branch? b)
+  (and (pair? b)
+	   (number? (branch-length b))
+	   (mobile? (branch-structure b))))
+
+
+(define (branch? b) 
+  (or (simple-branch? b)
+	  (mobile-branch? b)))
+
+(define (total-weight m)
+  (cond ((null? m) 0)
+		((number? m) m)
+		((simple-branch? m) (branch-structure m))
+		((mobile-branch? m) (total-weight (branch-structure m)))
+		((mobile? m) (+ (total-weight (left-branch m))
+						(total-weight (right-branch m))))))
+
+	
+(define (branch-torque b)
+  (* (branch-length b) (total-weight b)))
+
+(define (balance? m)
+  (= (branch-torque (left-branch m)) 
+	 (branch-torque (right-branch m))))
+
+
+(define (make-mobile left right)
+  (cons left right))
+
+(define (make-branch length structure)
+  (cons length structure))
+
+(define (right-branch m)
+  (cdr m))
+
+(define (branch-structure b)
+  (cdr b))
+
+(define mobile (make-mobile (make-branch 1 20)
+							(make-branch 2 
+										 (make-mobile (make-branch 3 30) 
+													  (make-branch 4 40)))))
+
+(define balanced-mobile (make-mobile (make-branch 1 mobile)
+									 (make-branch 2 45)))
+; 30)
+
+(define (square-tree tree)
+  (map (lambda (sub-tree)
+		 (if (pair? sub-tree)
+			 (square-tree sub-tree)
+			 (square sub-tree)))
+	   tree))
+
+(define (square-tree tree)
+  (cond ((null? tree) ())
+		((not (pair? tree)) (square tree))
+		(else (cons (square-tree (car tree))
+					(square-tree (cdr tree))))))
+
+; 31)
+
+(define (map-tree f tree)
+  (map (lambda (sub-tree)
+		 (if (pair? sub-tree)
+			 (map-tree f sub-tree)
+			 (f sub-tree)))
+	   tree))
+
+(define (square-tree tree)
+  (map-tree square tree))
+
+; 32)
+
+; ...
