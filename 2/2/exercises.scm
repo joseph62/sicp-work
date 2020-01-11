@@ -288,4 +288,104 @@
                           (cons (car s) x))
                         rest)))))
 
+; 33)
+
+(load "sequences-as-interfaces.scm")
+
+(define (map p sequence)
+  (accumulate (lambda (x y) (cons (p x) y)) 
+			  () 
+			  sequence))
+
+(define (append seq1 seq2)
+  (accumulate cons seq2 seq1))
+
+(define (length sequence)
+  (accumulate (lambda (x y) (+ y 1))
+			  0
+			  sequence))
+
+; 34)
+
+(define (horner-eval x coefficients)
+  (accumulate (lambda (coefficient higher-terms) (+ (* x higher-terms)
+													coefficient))
+			  0
+			  coefficients))
+
+; 35)
+
+(define (count-leaves t)
+  (accumulate +
+			  0
+			  (map (lambda (x)
+					 (if (pair? x)
+						 (+ (count-leaves (list (car x)))
+							(count-leaves (cdr x)))
+						 1))
+				   t)))
+
+
+; 36)
+
+(define (accumulate-n op init seqs)
+  (if (null? (car seqs))
+	  ()
+	  (cons (accumulate op init (map car seqs))
+			(accumulate-n op init (map cdr seqs)))))
+
+; 37)
+
+(define (sum sequence)
+  (accumulate + 0 sequence))
+
+(define (dot-product v w)
+  (sum (map * v w)))
+
+(define (matrix-*-vector m v)
+  (map (lambda (r) (dot-product r v)) m))
+
+(define (transpose m)
+  (accumulate-n cons () m))
+
+(define (matrix-*-matrix m n)
+  (let ((n-cols (transpose n)))
+	(map (lambda (r) (matrix-*-vector n-cols r)) m)))
+
+; 38)
+
+(define (fold-left op initial sequence)
+  (define (iter result rest)
+	(if (null? rest)
+		result
+		(iter (op result (car rest))
+			  (cdr rest))))
+  (iter initial sequence))
+
+(define fold-right accumulate)
+
+(fold-right / 1 '(1 2 3))
+; 3/2
+
+(fold-left / 1 '(1 2 3))
+; 1/6
+
+(fold-right list () '(1 2 3))
+; (1 (2 (3 ())))
+
+(fold-left list () '(1 2 3))
+; (((() 1) 2) 3)
+
+; fold-right op init sequence == fold-left op init sequence 
+; if and only if op satisfies the constraint that
+; (= (op a b) (op b a)) for all a and b
+; examples: +, *
+
+; 39)
+
+(define (reverse sequence)
+  (fold-right (lambda (x y) (append y (list x))) () sequence))
+
+(define (reverse sequence)
+  (fold-left (lambda (x y) (append (list y) x)) () sequence)) 
 
