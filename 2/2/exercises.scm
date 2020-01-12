@@ -389,3 +389,48 @@
 (define (reverse sequence)
   (fold-left (lambda (x y) (append (list y) x)) () sequence)) 
 
+; 40)
+
+
+(define (unique-pairs n)
+  (flatmap (lambda (i) 
+             (map (lambda (j)
+                    (list i j))
+                  (enumerate-interval 1 i))) 
+           (enumerate-interval 1 n)))
+
+(define (prime-sum-pairs n)
+  (map make-pair-sum
+	   (filter prime-sum?
+			   (unique-pairs n))))
+
+; 41)
+
+(define (unique-triples n)
+  (flatmap (lambda (i)
+             (map (lambda (jk) 
+                    (cons i jk))
+                  (unique-pairs i)))
+           (enumerate-interval 1 n)))
+
+(define (triples-less-than-n-sum-to-s n s)
+  (filter (lambda (ijk)
+            (= (sum ijk) s))
+          (unique-triples n)))
+
+; 42)
+
+(define (queens board-size)
+  (define (queen-cols k)
+    (if (= k 0)
+      (list empty-board)
+      (filter
+        (lambda (positions) (safe? k positions))
+        (flatmap
+          (lambda (rest-of-queens)
+            (map (lambda (new-row)
+                   (adjoin-position new-row k rest-of-queens))
+                 (enumerate-interval 1 board-size))
+            (queen-cols (- k 1)))))))
+  (queen-cols board-size))
+  
