@@ -430,7 +430,62 @@
           (lambda (rest-of-queens)
             (map (lambda (new-row)
                    (adjoin-position new-row k rest-of-queens))
-                 (enumerate-interval 1 board-size))
-            (queen-cols (- k 1)))))))
+                 (enumerate-interval 1 board-size)))
+            (queen-cols (- k 1))))))
   (queen-cols board-size))
-  
+
+(define (make-position row column)
+  (cons row column))
+
+(define (row position)
+  (car position))
+
+(define (column position)
+  (cdr position))
+
+(define empty-board ())
+
+(define (first-true predicate? items)
+  (cond ((null? items) ())
+        ((predicate? (car items)) (car items))
+        (else (first-true predicate? (cdr items)))))
+ 
+(define (safe? k positions)
+  (let ((position (first-true (lambda (p) (= (column p) k)) 
+                              positions))
+        (rest (filter (lambda (p) (not (= (column p) k)))
+                      positions)))
+    (and (null? (filter (lambda (p) 
+                          (= (column p) (column position)))
+                        rest))
+         (null? (filter (lambda (p)
+                          (= (row p) (row position)))
+                        rest))
+         (null? (filter (lambda (p)
+                          (= (abs (- (row p) 
+                                     (row position)))
+                             (abs (- (column p)
+                                     (column position)))))
+                        rest)))))
+
+
+(define (adjoin-position new-row k rest-of-queens)
+  (cons (make-position new-row k) rest-of-queens))
+
+
+; (queens 4)
+
+; 3,4 1,3 4,2 2,1
+; xxqx
+; qxxx
+; xxxq
+; xqxx
+
+; 2,4 4,3 1,2 3,1
+; xqxx
+; xxxq
+; qxxx
+; xxqx
+
+; 43)
+
