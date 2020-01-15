@@ -497,3 +497,14 @@
 
 ; 43)
 
+;(flatmap 
+;  (lambda (new-row)
+;    (map (lambda (rest-of-queens)
+;           (adjoin-position new-row k rest-of-queens))
+;         (queen-cols (- k 1))))
+;  (enumerate-interval 1 board-size))
+; This version results in a recursive call to queen-cols for every new row
+; position where the original only calls queen-cols once for every recursion
+; level. This would take T^n time
+
+
