@@ -507,4 +507,231 @@
 ; position where the original only calls queen-cols once for every recursion
 ; level. This would take T^n time
 
+; 44)
 
+(define (up-split painter n)
+  (if (= n 0)
+    painter
+    (let ((smaller (up-split painter (- n 1))))
+      (below painter (beside smaller smaller)))))
+
+; 45)
+
+(define (split outer-direction inner-direction)
+  (define (splitter painter n)
+	(if (= n 0)
+		painter
+		(let ((smaller (splitter painter (- n 1))))
+		  (outer-direction painter (inner-direction smaller smaller)))))
+  (lambda (painter n) (splitter painter n)))
+
+; 46)
+; See a-picture-language.scm
+
+; 47)
+; For list implementation see a-picture-language.scm
+(define (make-frame origin edge1 edge2)
+  (cons origin (cons edge1 edge2)))
+
+(define (origin-frame frame)
+  (car frame))
+
+(define (edge1-frame frame)
+  (cadr frame))
+
+(define (edge2-frame frame)
+  (cddr frame))
+
+; 48)
+; See a-picture-language.scm
+
+; 49)
+(define (painter-a frame)
+  (let ((origin (make-vect 0.0 0.0))
+		(edge1.0 (make-vect 1.0 0.0))
+		(edge2 (make-vect 0.0 1.0))
+		(far (make-vect 1.0 1.0)))
+	((segments->painter (list (make-segment origin edge1.0)
+							  (make-segment origin edge2)
+							  (make-segment edge1.0 far)
+							  (make-segment edge2 far)))
+	 frame)))
+
+(define (painter-b frame)
+  (let ((origin (make-vect 0.0 0.0))
+		(edge1.0 (make-vect 1.0 0.0))
+		(edge2 (make-vect 0.0 1.0))
+		(far (make-vect 1.0 1.0)))
+	((segments->painter (list (make-segment origin far)
+							  (make-segment edge1 edge2)))
+	 frame)))
+
+
+(define (painter-c frame)
+  (let ((midpoint-o-e1 (make-vect 0.5 0.0))
+		(midpoint-o-e2 (make-vect 0.0 0.5))
+		(midpoint-e1-f (make-vect 0.5 1.0))
+		(midpoint-e2-f (make-vect 1.0 0.5)))
+	((segments->painter (list (make-segment midpoint-o-e1 midpoint-o-e2)
+							  (make-segment midpoint-o-e1 midpoint-e2-f)
+							  (make-segment midpoint-o-e2 midpoint-e1-f)
+							  (make-segment midpoint-e1-f midpoint-e2-f)))
+	 frame))))
+
+(define (painter-d frame)
+  (let ((upper-right-hand (make-vect 0.0 0.9))
+		(lower-right-hand (make-vect 0.0 0.75))
+		(upper-right-elbow (make-vect 0.2 0.7))
+		(lower-right-elbow (make-vect 0.2 0.5))
+		(right-shoulder (make-vect 0.4 0.75))
+		(right-armpit (make-vect 0.4 0.675))
+		(right-neck (make-vect 0.45 0.75))
+		(mid-right-head (make-vect 0.425 0.9))
+		(top-right-head (make-vect 0.45 1.0))
+		(right-side (make-vect 0.4 0.575))
+		(right-outer-foot (make-vect 0.35 0.0))
+		(right-inner-foot (make-vect 0.45 0.0))
+		(crotch (make-vect 0.5 0.375))
+		(left-inner-foot (make-vect 0.55 0.0))
+		(left-outer-foot (make-vect 0.65 0.0))
+		(left-armpit (make-vect 0.575 0.5))
+		(left-lower-hand (make-vect 1.0 0.2))
+		(left-upper-hand (make-vect 1.0 0.35))
+		(left-shoulder (make-vect 0.75 0.75))
+		(left-nect (make-vect 0.65 0.75))
+		(mid-left-head (make-vect 0.7 0.9))
+		(top-left-head (make-vect 0.65 1.0)))
+	((segments->painter (list (make-segment upper-right-hand upper-right-elbow)
+							  (make-segment upper-right-elbow right-shoulder)
+							  (make-segment right-shoulder right-neck)
+							  (make-segment right-neck mid-right-head)
+							  (make-segment mid-right-head top-right-head)
+							  (make-segment top-left-head mid-left-head)
+							  (make-segment mid-left-head left-neck)
+							  (make-segment left-neck left-shoulder)
+							  (make-segment left-shoulder upper-left-hand)
+							  (make-segment lower-left-hand left-armpit)
+							  (make-segment left-armpit left-outer-foot)
+							  (make-segment left-inner-foot crotch)
+							  (make-segment crotch right-inner-foot)
+							  (make-segment right-outer-foot right-side)
+							  (make-segment right-side right-armpit)
+							  (make-segment right-armpit lower-right-elbow)
+							  (make-segment lower-right-elbow lower-right-hand)))
+	 frame)))
+
+(define wave painter-d)
+
+; 50)
+
+(define (flip-horiz painter)
+  (transform-painter painter
+					 (make-vect 1.0 0.0)
+					 (make-vect 1.0 1.0)
+					 (make-vect 0.0 0.0)))
+
+(define (rotate180 painter)
+  (transform-painter painter
+					 (make-vect 1.0 1.0)
+					 (make-vect 0.0 1.0)
+					 (make-vect 1.0 0.0)))
+
+(define (rotate270 painter)
+  (transform-painter painter
+					 (make-vect 0.0 1.0)
+					 (make-vect 0.0 0.0)
+					 (make-vect 1.0 1.0)))
+
+; 51)
+
+(define (below p1 p2)
+  (let ((split-point (make-vect 0.0 0.5)))
+	(let ((paint-top
+			(transform-painter p1
+							   split-point
+							   (make-vect 1.0 0.5)
+							   (make-vect 0.0 1.0)))
+		  (paint-bottom
+			(transform-painter p2
+							   (make-vect 0.0 0.0)
+							   (make-vect 1.0 0.0)
+							   split-point)))
+	  (lambda (frame)
+		(paint-top frame)
+		(paint-bottom frame)))))
+
+(define (below p1 p2)
+  (rotate270 (beside (rotate90 p1)
+					 (rotate90 p2))))
+; 52)
+
+
+(define (painter-d frame)
+  (let ((upper-right-hand (make-vect 0.0 0.9))
+		(lower-right-hand (make-vect 0.0 0.75))
+		(upper-right-elbow (make-vect 0.2 0.7))
+		(lower-right-elbow (make-vect 0.2 0.5))
+		(right-shoulder (make-vect 0.4 0.75))
+		(right-armpit (make-vect 0.4 0.675))
+		(right-neck (make-vect 0.45 0.75))
+		(mid-right-head (make-vect 0.425 0.9))
+		(top-right-head (make-vect 0.45 1.0))
+		(right-side (make-vect 0.4 0.575))
+		(right-outer-foot (make-vect 0.35 0.0))
+		(right-inner-foot (make-vect 0.45 0.0))
+		(crotch (make-vect 0.5 0.375))
+		(left-inner-foot (make-vect 0.55 0.0))
+		(left-outer-foot (make-vect 0.65 0.0))
+		(left-armpit (make-vect 0.575 0.5))
+		(left-lower-hand (make-vect 1.0 0.2))
+		(left-upper-hand (make-vect 1.0 0.35))
+		(left-shoulder (make-vect 0.75 0.75))
+		(left-nect (make-vect 0.65 0.75))
+		(mid-left-head (make-vect 0.7 0.9))
+		(top-left-head (make-vect 0.65 1.0))
+		(top-star (make-vect 0.5 0.575))
+		(top-right-star (make-vect 0.45 0.525))
+		(bottom-right-star (make-vect 0.475 0.475))
+		(bottom-left-star (make-vect 0.525 0.475))
+		(top-left-star (make-vect 0.55 0.525)))
+
+	((segments->painter (list (make-segment upper-right-hand upper-right-elbow)
+							  (make-segment upper-right-elbow right-shoulder)
+							  (make-segment right-shoulder right-neck)
+							  (make-segment right-neck mid-right-head)
+							  (make-segment mid-right-head top-right-head)
+							  (make-segment top-left-head mid-left-head)
+							  (make-segment mid-left-head left-neck)
+							  (make-segment left-neck left-shoulder)
+							  (make-segment left-shoulder upper-left-hand)
+							  (make-segment lower-left-hand left-armpit)
+							  (make-segment left-armpit left-outer-foot)
+							  (make-segment left-inner-foot crotch)
+							  (make-segment crotch right-inner-foot)
+							  (make-segment right-outer-foot right-side)
+							  (make-segment right-side right-armpit)
+							  (make-segment right-armpit lower-right-elbow)
+							  (make-segment lower-right-elbow lower-right-hand)
+							  (make-segment top-star bottom-right-star)
+							  (make-segment bottom-right-star top-left-star)
+							  (make-segment top-left-star top-right-star)
+							  (make-segment top-right-star bottom-left-star)
+							  (make-segment bottom-left-star top-star)))
+	 frame)))
+
+(define (corner-split painter n)
+  (if (= n 0)
+    painter
+    (let ((up (up-split painter (- n 1)))
+          (right (right-split painter (- n 1))))
+      (let ((top-left (beside up (flip-horiz up)))
+            (bottom-right (below right (flip-vert right)))
+            (corner (corner-split painter (- n 1))))
+        (beside (below painter top-left)
+                (below bottom-right corner))))))
+
+
+(define (square-limit painter n)
+  (let ((combine4 (square-of-four identity rotate90
+								  rotate180 rotate270)))
+	(combine4 (corner-split painter n))))
