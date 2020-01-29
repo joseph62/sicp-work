@@ -32,3 +32,9 @@
 ; ''ab functionally (quote (quote ab))
 ; the ' is syntactic sugar for (quote ...)
 ; so ''a is '(quote a)
+
+; 56)
+; In symbolic-differentiation.scm
+
+; 57)
+; In symbolic-differentiation.scm

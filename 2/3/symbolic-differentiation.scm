@@ -1,3 +1,6 @@
+(define (operation expression)
+  (car expression))
+
 (define (variable? e)
   (symbol? e))
 
@@ -7,37 +10,48 @@
 (define (=number? e n)
   (and (number? e) (= e n)))
 
-(define (make-sum a b)
-  (cond ((=number? a 0) b)
-		((=number? b 0) a)
-		((and (number? a) (number? b)) (+ a b))
-		(else (list '+ a b))))
+; 57)
+(define (make-sum a . rest)
+  (let ((b (if (null? rest) () (apply make-sum rest))))
+    (cond ((null? b) a)
+          ((=number? a 0) b)
+          ((=number? b 0) a)
+          ((and (number? a) (number? b)) (+ a b))
+          (else (list '+ a b)))))
 
 (define (addend sum)
   (cadr sum))
 
 (define (augend sum)
-  (caddr sum))
+  (if (> (length sum) 3) 
+    (apply make-sum (cddr sum))
+    (caddr sum)))
+
 
 (define (sum? e)
   (and (pair? e) 
-	   (eq? (car e) '+)))
+	   (eq? (operation e) '+)))
 
-(define (make-product a b)
-  (cond ((or (=number? a 0) (=number? b 0)) 0)
-		((=number? a 1) b)
-		((=number? b 1) a)
-		(else (list '* a b))))
+; 57)
+(define (make-product a . rest)
+  (let ((b (if (null? rest) () (apply make-product rest))))
+    (cond ((null? b) a)
+          ((or (=number? a 0) (=number? b 0)) 0)
+          ((=number? a 1) b)
+          ((=number? b 1) a)
+          (else (list '* a b)))))
 
 (define (multiplier product)
   (cadr product))
 
 (define (multiplicand product)
-  (caddr product))
+  (if (> (length product) 3)
+    (apply make-product (cddr product))
+    (caddr product)))
 
 (define (product? e)
   (and (pair? e)
-	   (eq? (car e) '*)))
+	   (eq? (operation e) '*)))
 
 ; 56)
 
@@ -47,7 +61,7 @@
 		((=number? p 0) 1)
 		((=number? p 1) b)
 		((and (number? b) (number? p)) (expt b p))
-		(else (list '** b p))))
+		(else '(** b p))))
 
 (define (base e)
   (cadr e))
@@ -56,10 +70,21 @@
   (caddr e))
 
 (define (exponent? e)
-  (and (pair? e) (eq? (car e) '**)))
+  (and (pair? e) (eq? (operation e) '**)))
 
-(define (make-sub a b)
-  (list '- a b))
+(define (make-difference a b)
+  (cond ((=number? b 0) a)
+        ((and (number? a) (number? b)) (- a b))
+        (else '(- a b))))
+
+(define (subtrahend difference)
+  (cadr difference))
+
+(define (minuend difference)
+  (caddr difference))
+
+(define (difference? e)
+  (and (pair? e) (eq? (operation e) '-)))
 
 (define (deriv e var)
   (cond ((number? e) 0)
@@ -67,20 +92,23 @@
 		 (if (same-variable? e var) 1 0))
 		((sum? e)
 		 (make-sum (deriv (addend e) var)
-				   (deriv (augend e) var)))
+               (deriv (augend e) var)))
 		((product? e)
 		 (make-sum (make-product (multiplier e)
-								 (deriv (multiplicand e) var))
-				   (make-product (deriv (multiplier e) var)
-								 (multiplicand e))))
+                             (deriv (multiplicand e) var))
+               (make-product (deriv (multiplier e) var)
+                             (multiplicand e))))
 		; 56) cont....
+    ((difference? e)
+     (make-difference (deriv (subtrahend e) var)
+                      (deriv (minuend e) var)))
 		((exponent? e)
-		 (make-product (power e)
-					   (make-product (make-exponent (base e)
-													(make-sub (power e) 1))
-									 (derive (base e) var))))
+     (make-product (power e)
+                   (make-product (make-exponent (base e)
+                                                (make-difference (power e) 1))
+                                 (derive (base e) var))))
 		(else
-		  (error "unknown expression type -- DERIV" e))))
+      (error "unknown expression type -- DERIV" e))))
 
 
 
