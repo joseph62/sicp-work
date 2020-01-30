@@ -33,8 +33,25 @@
 ; the ' is syntactic sugar for (quote ...)
 ; so ''a is '(quote a)
 
-; 56)
-; In symbolic-differentiation.scm
+; 56 - 58 in symbolic-differenctiation.scm
+; 58 b - Not attempted
 
-; 57)
-; In symbolic-differentiation.scm
+; 59 - in representing-sets.scm
+
+; 60)
+(define (element-of-set? x set)
+  (null? (filter (lambda (y) (equal? x y)) set)))
+
+(define (adjoin-set x set)
+  (cons x set))
+
+(define (intersection-set s1 s2)
+  (filter (lambda (x) (element-of-set? x s1) s2)))
+
+(define (union-set s1 s2)
+  (fold-right adjoin-set s2 s1))
+
+; This implementation of a set is very good for adding
+; elements and much less efficient for membership 
+; dependent operations as the size of the set will grow 
+; with every single addition rather than when the addition is unique

@@ -1,5 +1,5 @@
 (define (operation expression)
-  (car expression))
+  (cadr expression))
 
 (define (variable? e)
   (symbol? e))
@@ -17,10 +17,11 @@
           ((=number? a 0) b)
           ((=number? b 0) a)
           ((and (number? a) (number? b)) (+ a b))
-          (else (list '+ a b)))))
+          ; 58)
+          (else (list a '+ b)))))
 
 (define (addend sum)
-  (cadr sum))
+  (car sum))
 
 (define (augend sum)
   (if (> (length sum) 3) 
@@ -39,10 +40,11 @@
           ((or (=number? a 0) (=number? b 0)) 0)
           ((=number? a 1) b)
           ((=number? b 1) a)
-          (else (list '* a b)))))
+          ; 58)
+          (else (list a '* b)))))
 
 (define (multiplier product)
-  (cadr product))
+  (car product))
 
 (define (multiplicand product)
   (if (> (length product) 3)
@@ -61,10 +63,11 @@
 		((=number? p 0) 1)
 		((=number? p 1) b)
 		((and (number? b) (number? p)) (expt b p))
-		(else '(** b p))))
+    ; 58)
+		(else '(b ** p))))
 
 (define (base e)
-  (cadr e))
+  (car e))
 
 (define (power e)
   (caddr e))
@@ -75,10 +78,11 @@
 (define (make-difference a b)
   (cond ((=number? b 0) a)
         ((and (number? a) (number? b)) (- a b))
-        (else '(- a b))))
+        ; 58
+        (else '(a - b))))
 
 (define (subtrahend difference)
-  (cadr difference))
+  (car difference))
 
 (define (minuend difference)
   (caddr difference))
