@@ -81,6 +81,7 @@
 ; however the second procedure keeps a running total during execution which
 ; should result in a lower space complexity for the operation
 
+(define tree->list tree->list-2)
 
 ; 64)
 (define (list->tree elements)
@@ -121,3 +122,55 @@
 ; b)
 ; The number of operations will increase linearly with the number of elements provided
 ; because the operation must happen for every element provided
+
+; 65)
+
+
+(define (intersection-sorted-list s1 s2)
+  (if (or (null? s1) (null? s2))
+    ()
+    (let ((x1 (car s1))
+          (x2 (car s2)))
+      (cond ((= x1 x2)
+             (cons x1
+                   (intersection-set (cdr s1)
+                                     (cdr s2))))
+            ((< x1 x2)
+             (intersection-set (cdr s1) s2))
+            ((> x1 x2)
+             (intersection-set s1 (cdr s2)))))))
+
+(define (intersection-set t1 t2)
+  (list->tree 
+    (intersection-sorted-list
+      (tree->list t1)
+      (tree->list t2))))
+
+(define (union-sorted-list s1 s2)
+  (cond ((null? s1) s2)
+        ((null? s2) s1)
+        (else
+          (let ((x1 (car s1))
+                (x2 (car s2))
+                (r1 (cdr s1))
+                (r2 (cdr s2)))
+            (cond ((= x1 x2) (cons x1 (union-set r1 r2)))
+                  ((> x1 x2) (cons x2 (union-set s1 r2)))
+                  ((< x1 x2) (cons x1 (union-set r1 s2))))))))
+
+(define (union-set t1 t2)
+  (list->tree 
+    (union-sorted-list
+      (tree->list t1)
+      (tree->list t2))))
+
+; 66)
+
+(define (lookup given-key set-of-records)
+  (cond ((null? set-of-records) #f)
+        ((> given-key (key (entry set-of-records)))
+         (lookup given-key (right-branch set-of-records)))
+        ((< given-key (key (entry set-of-records)))
+         (lookup given-key (left-branch set-of-records)))
+        (else (entry set-of-redcords))))
+
