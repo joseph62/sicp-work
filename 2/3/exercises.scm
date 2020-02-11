@@ -174,3 +174,145 @@
          (lookup given-key (left-branch set-of-records)))
         (else (entry set-of-redcords))))
 
+; 67)
+
+(define sample-tree
+  (make-code-tree (make-leaf 'a 4)
+                  (make-code-tree
+                    (make-leaf 'b 2)
+                    (make-code-tree (make-leaf 'd 1)
+                                    (make-leaf 'c 1)))))
+
+(define sample-message '(0 1 1 0 0 1 0 1 0 1 1 1 0))
+; (0 1 1 0 0 1 0 1 0 1 1 1 0)
+; 0 (1 1 0 0 1 0 1 0 1 1 1 0)
+; a (1 1 0 0 1 0 1 0 1 1 1 0)
+; a 1 (1 0 0 1 0 1 0 1 1 1 0)
+; a 1 1 (0 0 1 0 1 0 1 1 1 0)
+; a 1 1 0 (0 1 0 1 0 1 1 1 0)
+; a     d (0 1 0 1 0 1 1 1 0)
+; a     d 0 (1 0 1 0 1 1 1 0)
+; a     d a (1 0 1 0 1 1 1 0)
+; a     d a 1 (0 1 0 1 1 1 0)
+; a     d a 1 0 (1 0 1 1 1 0)
+; a     d a   b (1 0 1 1 1 0)
+; a     d a   b 1 (0 1 1 1 0)
+; a     d a   b 1 0 (1 1 1 0)
+; a     d a   b   b (1 1 1 0)
+; a     d a   b   b 1 (1 1 0)
+; a     d a   b   b 1 1 (1 0)
+; a     d a   b   b 1 1 1 (0)
+; a     d a   b   b     c (0)
+; a     d a   b   b     c  0
+; a     d a   b   b     c  a
+
+; 68)
+
+(define (encode message tree)
+  (if (null? message)
+    ()
+    (append (encode-symbol (car message) tree)
+            (encode (cdr message) tree))))
+
+(define (encode-symbol symbol tree)
+  (define (iter bits tree)
+    (cond ((leaf? tree) (reverse bits))
+          ((member symbol (symbols (left tree))) 
+           (iter (cons 0 bits) (left tree)))
+          ((member symbol (symbols (right tree)))
+           (iter (cons 1 bits) (right tree)))))
+  (iter () tree))
+
+; 69)
+
+(define (generate-huffman-tree pairs)
+  (successive-merge (make-leaf-set pairs)))
+
+(define (lowest-leaf leaves)
+  (define (iter current processed rest)
+    (cond ((null? rest) (list current processed))
+          ((< (weight current) (weight (car rest)))
+           (iter current 
+                 (cons (car rest) processed) 
+                 (cdr rest)))
+          (else (iter (car rest) 
+                      (cons current processed)
+                      (cdr rest)))))
+  (iter (car leaves) () (cdr leaves)))
+
+(define (successive-merge leaf-set)
+  (if (= (length leaf-set) 1)
+    (car leaf-set)
+    (let* ((first-result (lowest-leaf leaf-set))
+           (first-tree (car first-result))
+           (partial-remaining (cadr first-result))
+           (second-result (lowest-leaf partial-remaining))
+           (second-tree (car second-result))
+           (remaining (cadr second-result)))
+      (successive-merge 
+        (cons (make-code-tree first-tree 
+                              second-tree)
+              remaining)))))
+
+; 70)
+
+(define boom-tree (generate-huffman-tree '((a 2)   (boom 1) 
+                                           (get 2) (job 2) 
+                                           (na 16) (sha 3)
+                                           (yip 9) (wah 1))))
+
+(define encoded-song (encode '(get a job 
+                               sha na na na na na na na na
+                               get a job 
+                               sha na na na na na na na na
+                               wah yip yip yip yip yip yip yip yip yip
+                               sha boom)
+                             boom-tree))
+
+; length: 84
+; fixed encoding length 2**3 (3 bits)
+; 3 bits * 36 symbols = 108
+
+; 71)
+
+; 2**4: 1 2 4 8 16 32
+;   31
+;  /  \
+;16    15
+;     /  \
+;    8    7
+;        / \
+;       4   3
+;          / \
+;         2   1
+; # bits for least frequent: 4
+; # bits for most frequent: 1
+
+; 2**9: 1 2 4 8 16 32 64 128 256 512 1024
+;  1024
+;   / \
+; 512  511
+;      / \
+;    256  255
+;         / \
+;       128  127
+;            / \
+;          64   63
+;               / \
+;             32   31
+;                 /  \
+;               16    15
+;                    /  \
+;                   8    7
+;                       / \
+;                      4   3
+;                         / \
+;                        2   1
+; # bits for least frequent: 9
+; # bits for most frequent: 1
+
+; 72)
+; for the case of a lobsided tree the time spent encoding
+; a symbol can be either n (if membership test is constant),
+; n*logn (if membership test is with a balanced tree set),
+; or n**2 (if membership test is linear)
