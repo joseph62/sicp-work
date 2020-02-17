@@ -1,3 +1,16 @@
+(define (attach-tag type-tag content)
+  (cons type-tag content))
+
+(define (type-tag datum)
+  (if (pair? datum)
+    (car datum)
+    (error "Bad tagged datum -- TYPE-TAG" datum)))
+
+(define (contents number)
+  (if (pair? datum)
+    (cdr datum)
+    (error "Bad tagged datum -- TYPE-TAG" datum)))
+
 (define (square n)
   (* n n))
 
@@ -12,19 +25,6 @@
 
 (define (make-from-mag-ang mag ang)
   (make-from-mag-ang-polar mag ang))
-
-(define (attach-tag type-tag content)
-  (cons type-tag content))
-
-(define (type-tag datum)
-  (if (pair? datum)
-    (car datum)
-    (error "Bad tagged datum -- TYPE-TAG" datum)))
-
-(define (contents number)
-  (if (pair? datum)
-    (cdr datum)
-    (error "Bad tagged datum -- TYPE-TAG" datum)))
 
 (define (real-part-rectangular number)
   (car number))
