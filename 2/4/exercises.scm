@@ -64,3 +64,29 @@
 ; if the get function operands switch to <op> 'deriv the only change
 ; needed to to be made is the put
 
+; 74)
+; a)
+(define (get-record division employee-name)
+  ((get 'get-record division) employee-name))
+; The division must implement a get-record procedure that accepts an
+; employee name and returns the record for that employee
+
+; b)
+(define (get-salary division employee-name)
+  ((get 'get-salary division) (get-record division employee-name)))
+; The division must implement a version of get-salary and get-record
+
+; c)
+(define (find-employee-record divisions employee-name)
+  (define (find-employee-record-iter divisions)
+    (if (null? divisions)
+      ()
+      (let ((record (get-record (car divisions) employee-name)))
+        (if record
+          record
+          (find-employee-record-iter (cdr divisions))))))
+  (find-employee-record-iter divisions))
+
+; d)
+; When a new division is added to the company, the only change that needs to be
+; made is to implement the get-record and get-salary procedures for that division
