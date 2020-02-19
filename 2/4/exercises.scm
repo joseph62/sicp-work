@@ -145,16 +145,15 @@
         (else (error "Bad tagged datum -- CONTENTS" datum))))
 
 (define (install-scheme-number-package)
-  (define (tag x)
-    (attach-tag 'scheme-number x))
+  (define (tag x) x)
   (put 'add '(scheme-number scheme-number)
-       (lambda (x y) (+ x y)))
+       (lambda (x y) (tag (+ x y))))
   (put 'sub '(scheme-number scheme-number)
-       (lambda (x y) (- x y)))
+       (lambda (x y) (tag (- x y))))
   (put 'mul '(scheme-number scheme-number)
-       (lambda (x y) (* x y)))
+       (lambda (x y) (tag (* x y))))
   (put 'div '(scheme-number scheme-number)
-       (lambda (x y) (/ x y)))
+       (lambda (x y) (tag (/ x y))))
   (put 'make 'scheme-number
        (lambda (x) x))
   'done)
@@ -192,4 +191,33 @@
   (put '=zero? '(scheme-number)
        (lambda (x) (= x 0)))
   'done)
+
+; 81)
+; a) Calling the exp procedure on complex numbers would result
+; in an infinite recursion. If the procedure is defined, the procedure
+; would be executed properly.
+; b) There is not a need to try a same type coercion in apply-generic.
+; c) 
+(define (apply-generic op . args)
+  (let* ((type-tags (map type-tag args))
+         (proc (get op type-tags)))
+    (if proc
+      (apply proc (map contents args))
+      (if (= (length args) 2)
+        (let* ((type1 (car type-tags))
+               (type2 (cadr type-tags))
+               (a1 (car args))
+               (a2 (cadr args))
+               (same-type (eq? type1 type2))
+               (t1->t2 (get-coercion type1 type2))
+               (t2->t1 (get-coercion type2 type1)))
+          (cond ((and t1->t2 (not same-type))
+                  (apply-generic op (t1->t2 a1) a2))
+                ((and t2->t1 (not same-type))
+                  (apply-generic op a1 (t2->t1 a2)))
+                (else
+                  (error "No method for these types"
+                         (list op type-tags)))))
+        (error "No method for these types"
+               (list op type-tags))))))
 
