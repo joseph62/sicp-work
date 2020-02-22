@@ -128,3 +128,23 @@
         (error "No method for these types"
                (list op type-tags))))))
 
+; 82)
+; apply-generic would need to check all combinations of types
+; to ensure that super type and mixed type operations would be found.
+
+; 83)
+(put 'raise 
+     'scheme-number 
+     (lambda (n) (make-rational n n)))
+
+(put 'raise 
+     'rational 
+     (lambda (n) (make-real (/ (numer n)
+                               (denom n)))))
+
+(put 'raise
+     'real
+     (lambda (n) (make-complex (real n) 0)))
+
+
+
