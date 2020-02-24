@@ -134,11 +134,11 @@
 
 ; 83)
 (put 'raise 
-     'scheme-number 
+     'scheme-number
      (lambda (n) (make-rational n n)))
 
 (put 'raise 
-     'rational 
+     'rational
      (lambda (n) (make-real (/ (numer n)
                                (denom n)))))
 
@@ -146,5 +146,38 @@
      'real
      (lambda (n) (make-complex (real n) 0)))
 
+; 84)
 
+(define (is-super? start potential-super)
+  (or (eq? (type-tag start)
+           (type-tag potential-super))
+      (let ((raise (get 'raise (type-tag start))))
+        (if raise
+          (is-super? (raise (content start)) potential-super)
+          #f))))
+
+(define (apply-generic op . args)
+  (let* ((type-tags (map type-tag args))
+         (proc (get op type-tags)))
+    (if proc
+      (apply proc (map contents args))
+      (if (= (length args) 2)
+        (let* ((type1 (car type-tags))
+               (type2 (cadr type-tags))
+               (a1 (car args))
+               (a2 (cadr args))
+               (t1-super? (is-super? a2 a1))
+               (t2-super? (is-super? a1 a2))
+               (same-type (eq? type1 type2))
+               (raise-t1 (get 'raise type1))
+               (raise-t2 (get 'raise type2)))
+          (cond ((and t2-super? t1->t2 (not same-type))
+                  (apply-generic op (raise-t1 a1) a2))
+                ((and t1-super? t2->t1 (not same-type))
+                  (apply-generic op a1 (raise-t2 a2)))
+                (else
+                  (error "No method for these types"
+                         (list op type-tags)))))
+        (error "No method for these types"
+               (list op type-tags))))))
 
