@@ -181,3 +181,96 @@
         (error "No method for these types"
                (list op type-tags))))))
 
+; 85)
+
+(put 'project 
+     'complex
+     (lambda (c) 
+       (make-real (real-part c))))
+
+(put 'project
+     'real
+     (lambda (r) 
+       (let ((n (round r)))
+         (make-rational n n))))
+
+(put 'project
+     'rational
+     (lambda (r)
+       (make-scheme-number (numer r))))
+
+(define (project data)
+  ((get 'project (type-tag data)) data))
+
+(define (projectable? data)
+  (get 'project (type-tag data)))
+
+(define (drop data)
+  (if (projectable? data)
+    (let* ((projected (project data))
+          (reraised (raise projected)))
+      (if (equ? reraised data)
+        (drop projected)
+        data))
+    data))
+
+(define (apply-generic op . args)
+  (let* ((type-tags (map type-tag args))
+         (proc (get op type-tags)))
+    (if proc
+      (drop (apply proc (map contents args)))
+      (if (= (length args) 2)
+        (let* ((type1 (car type-tags))
+               (type2 (cadr type-tags))
+               (a1 (car args))
+               (a2 (cadr args))
+               (t1-super? (is-super? a2 a1))
+               (t2-super? (is-super? a1 a2))
+               (same-type (eq? type1 type2))
+               (raise-t1 (get 'raise type1))
+               (raise-t2 (get 'raise type2)))
+          (cond ((and t2-super? t1->t2 (not same-type))
+                  (apply-generic op (raise-t1 a1) a2))
+                ((and t1-super? t2->t1 (not same-type))
+                  (apply-generic op a1 (raise-t2 a2)))
+                (else
+                  (error "No method for these types"
+                         (list op type-tags)))))
+        (error "No method for these types"
+               (list op type-tags))))))
+
+; 86)
+
+(define (install-complex-package)
+  (define (make-from-real-imag x y)
+    ((get 'make-from-real-imag 'rectangular) x y))
+  (define (make-from-mag-ang r a)
+    ((get 'make-from-mag-ang 'polar) r a))
+
+  (define (add-complex z1 z2)
+    (make-from-real-imag (apply-generic 'add (real-part z1) (real-part z2))
+                         (apply-generic 'add (imag-part z1) (imag-part z2))))
+  (define (sub-complex z1 z2)
+    (make-from-real-imag (apply-generic 'sub (real-part z1) (real-part z2))
+                         (apply-generic 'sub (imag-part z1) (imag-part z2))))
+  (define (mul-complex z1 z2)
+    (make-from-mag-ang (apply-generic 'mul (magnitude z1) (magnitude z2))
+                       (apply-generic 'add (angle z1) (angle z2))))
+  (define (div-complex z1 z2)
+    (make-from-mag-ang (apply-genric 'div (magnitude z1) (magnitude z2))
+                       (apply-genric 'sub (angle z1) (angle z2))))
+
+  (define (tag z) (attach-tag 'complex z))
+  (put 'add '(complex complex)
+       (lambda (z1 z2) (tag (add-complex z1 z2))))
+  (put 'sub '(complex complex)
+       (lambda (z1 z2) (tag (sub-complex z1 z2))))
+  (put 'mul '(complex complex)
+       (lambda (z1 z2) (tag (mul-complex z1 z2))))
+  (put 'div '(complex complex)
+       (lambda (z1 z2) (tag (div-complex z1 z2))))
+  (put 'make-from-real-imag 'complex
+       (lambda (x y) (tag (make-from-real-imag x y))))
+  (put 'make-from-mag-ang 'complex
+       (lambda (x y) (tag (make-from-mag-ang r a))))
+  'done)
