@@ -324,3 +324,11 @@
   (put 'make-from-mag-ang 'complex
        (lambda (x y) (tag (make-from-mag-ang r a))))
   'done)
+
+; 87)
+(define (install-poly-generic-arithmetic)
+  (define (=zero? poly)
+    (=zero? (coeff poly)))
+  (put '=zero? '(polynomial) =zero?)
+  'done)
+
