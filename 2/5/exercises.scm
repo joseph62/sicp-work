@@ -328,7 +328,65 @@
 ; 87)
 (define (install-poly-generic-arithmetic)
   (define (=zero? poly)
-    (=zero? (coeff poly)))
+    (empty-termlist? (term-list poly))
   (put '=zero? '(polynomial) =zero?)
+
+; 88)
+  (define (negate n)
+    (sub 0 n))
+
+  (define (sub-poly p1 p2)
+    (if (same-variable? p1 p2)
+      (make-poly (variable p1)
+                 (sub-terms (term-list p1)
+                            (term-list p2)))
+      (error "Polys not in same var -- SUB-POLY"
+             (list p1 p2))))
+
+  (define (sub-terms L1 L2)
+    (cond ((empty-termlist? L1) L2)
+          ((empty-termlist? L2) L1)
+          (else
+            (let ((t1 (first-term L1))
+                  (t2 (first-term L2)))
+              (cond ((> (order t1) (order t2))
+                     (adjoin-term
+                       (negate t1) (sub-terms (rest-terms L1) L2)))
+                    ((< (order t1) (order t2))
+                     (adjoin-term
+                       (negate t2) (sub-term L1 (rest-terms L2))))
+                    (else 
+                      (adjoin-term
+                        (make-term (order t1)
+                                   (sub (coeff t1) (coeff t2))))
+                      (sub-terms (rest-terms L1)
+                                 (rest-terms L2))))))))
+
   'done)
+
+; 89)
+  (define (the-empty-termlist) ())
+  (define (adjoin-term term term-list)
+    (cond ((= (order term) (next-highest-order term-list))
+           (cons (coeff term) term-list))
+          ((< (order term) (next-highest-order term-list)) term-list)
+          ((> (order term) (next-highest-order term-list))
+           (adjoin-term term (cons 0 term-list)))))
+  (define (next-highest-order term-list)
+    (length term-list))
+  (define (highest-order term-list)
+    (- (length term-list) 1))
+  (define (empty-termlist? term-list)
+    null?)
+  (define (first-term term-list)
+    (make-term (highest-order term-list)
+               (car term-list)))
+  (define (rest-terms term-list)
+    (cdr term-list))
+  (define (make-term order coefficient)
+    (list order coefficient))
+  (define (order term)
+    (car term))
+  (define (coefficient term)
+    (cadr term))
 

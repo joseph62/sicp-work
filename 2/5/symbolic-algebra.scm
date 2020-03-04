@@ -16,11 +16,11 @@
 
   ;; adjoin-term coeff
 
-  (define (the-empty-termlist) (list))
+  (define (the-empty-termlist) ())
   (define (adjoin-term term term-list)
     (cons term term-list))
   (define (empty-termlist? term-list)
-    #t)
+    (null? term-list))
   (define (first-term term-list)
     (car term-list))
   (define (rest-terms term-list)
