@@ -458,3 +458,28 @@
   'done)
 
   'done)
+
+; 91)
+(define (div-poly p1 p2)
+  (if (same-variable? p1 p2)
+    (div-terms (term-list p1)
+               (term-list p2)))
+    (error "Polys not in same var -- ADD-POLY"
+           (list p1 p2)))
+
+(define (div-terms l1 l2)
+  (if (empty-termlist? l1)
+    (list (the-empty-termlist) (the-empty-termlist))
+    (let ((t1 (first-term l1))
+          (t2 (first-term l2)))
+      (if (> (order t2) (order t1))
+        (list (the-empty-termlist) l1)
+        (let ((new-c (div (coeff t1) (coeff t2)))
+              (new-o (- (order t1) (order t2))))
+          (let ((new-term (make-term new-c new-o))
+                (rest-of-result
+                  (div-terms (sub l1 new-term)
+                             (mul-term-by-all-terms new-term l2))))
+            (map (lambda (term-list)
+                   (adjoin-term new-term term-list))
+                 rest-of-result)))))
