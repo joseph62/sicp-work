@@ -482,4 +482,86 @@
                              (mul-term-by-all-terms new-term l2))))
             (map (lambda (term-list)
                    (adjoin-term new-term term-list))
-                 rest-of-result)))))
+                 rest-of-result)))))))
+
+; 92) Yikes, pass for now.
+
+; 93)
+(define (install-rational-package)
+  (define (numer x) (car x))
+  (define (denom x) (cdr x))
+  (define (make-rat n d)
+    (cons n d))
+  (define (add-rat x y)
+    (make-rat (add (mul (numer x) (denom y))
+                   (mul (numer y) (denom x)))
+              (mul (denom x) (denom y))))
+  (define (sub-rat x y)
+    (make-rat (sub (mul (numer x) (denom y))
+                   (mul (numer y) (denom x)))
+              (mul (denom x) (denom y))))
+  (define (mul-rat x y)
+    (make-rat (mul (numer x) (numer y))
+              (mul (denom x) (denom y))))
+  (define (div-rat x y)
+    (make-rat (mul (numer x) (denom y))
+              (mul (denom x) (numer y))))
+
+  (define (tag x) (attach-tag 'rational x))
+  (put 'add '(rational rational)
+       (lambda (x y) (tag (add-rat x y))))
+  (put 'sub '(rational rational)
+       (lambda (x y) (tag (sub-rat x y))))
+  (put 'mul '(rational rational)
+       (lambda (x y) (tag (mul-rat x y))))
+  (put 'div '(rational rational)
+       (lambda (x y) (tag (div-rat x y))))
+
+  (put 'make 'rational
+       (lambda (n d) (tag (make-rat n d))))
+
+  'done)
+
+; 94)
+(define (gcd-terms l1 l2)
+  (if (empty-termlist? l2)
+    l1
+    (gcd-terms l2 (remainder-terms l1 l2))))
+
+(define (remainder-terms l1 l2)
+  (cadr (div-terms l1 l2)))
+
+
+(define (sub-poly p1 p2)
+  (if (same-variable? p1 p2)
+    (make-poly (variable p1)
+               (gcd-terms (term-list p1)
+                          (term-list p2)))
+    (error "Polys not in same var -- SUB-POLY"
+           (list p1 p2))))
+
+; 95) ...
+; 96)
+(define (gcd-terms l1 l2)
+  (if (empty-termlist? l2)
+    l1
+    (gcd-terms l2 (pseudoremainder-terms l1 l2))))
+
+(define (pseudoremainder-terms l1 l2)
+  (let ((o1 (order (next-term l2))) 
+        (o2 (order (next-term l1))) 
+        (c  (coeff (next-term l1))))
+    (cadr (div-terms l1
+                     (mul (pow c (add 1 (sub o1 o2)))
+                          l2)))))
+
+(define (gcd-terms l1 l2)
+  (define (iter l1 l2)
+    (if (empty-termlist? l2)
+      l1
+      (gcd-terms l2 (remainder-terms l1 l2))))
+  (let ((result (iter l1 l2)))
+    (div result
+         (apply gcd (map (coeff result))))))
+
+; 97) ...
