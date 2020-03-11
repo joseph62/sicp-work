@@ -42,3 +42,21 @@
             ((else (error "Unkown request -- MAKE-ACCOUNT"
                           m)))))
     dispatch))
+
+; 5)
+(define (random-in-range low high)
+  (let ((range (- high low)))
+    (+ low (random range))))
+
+(define (rectangle-area x1 y1 x2 y2)
+  (let ((l (abs (- x2 x1)))
+        (w (abs (- y2 y1))))
+    (* l w)))
+
+
+(define (estimate-integral p x1 y1 x2 y2 trials)
+  (* (rectangle-area x1 y1 x2 y2)
+     (monte-carlo trials
+                  (lambda ()
+                    (p (random-in-range x1 x2)
+                       (random-in-range y1 y2))))))
