@@ -60,3 +60,15 @@
                   (lambda ()
                     (p (random-in-range x1 x2)
                        (random-in-range y1 y2))))))
+
+; 6)
+(define rand
+  (let ((current 0))
+    (lambda (op)
+      (cond ((eq? 'reset op) 
+             (lambda (value) 
+               (set! current value)))
+            ((eq? 'generate op) 
+             (begin (set! current (rand-update current))
+                    current))
+            (else (error "Operation not found -- RAND" op))))))
