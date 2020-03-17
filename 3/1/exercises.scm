@@ -37,8 +37,8 @@
       "The cops have been called")
     (define (dispatch p m)
       (cond ((not (eq? p password)) bad-password)
-            ((eq? 'withdraw) withdraw)
-            ((eq? 'deposit) deposit)
+            ((eq? m 'withdraw) withdraw)
+            ((eq? m 'deposit) deposit)
             ((else (error "Unkown request -- MAKE-ACCOUNT"
                           m)))))
     dispatch))
@@ -72,3 +72,22 @@
              (begin (set! current (rand-update current))
                     current))
             (else (error "Operation not found -- RAND" op))))))
+
+; 7)
+(define (make-joint account account-password joint-password)
+  (define (is-joint-password? password)
+    (eq? password joint-password))
+  (lambda (password operation)
+    (if (is-joint-password? password)
+      (account account-password operation)
+      (account password operation))))
+
+; 8)
+(define f 
+  (let ((zeroed? #f))
+    (lambda (value)
+      (cond (zeroed? 0)
+            ((= value 0)
+             (begin (set! zeroed? #t)
+                    0))
+            (else value)))))
