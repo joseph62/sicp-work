@@ -223,3 +223,131 @@ w
 
 (define (set-rear-ptr! q v)
   ((q 'set-rear-ptr!) v))
+
+; 23)
+(define (make-deque)
+  (cons () ()))
+
+(define (front-ptr d)
+  (car d))
+
+(define (rear-ptr d)
+  (cdr d))
+
+(define (set-front-ptr! d v)
+  (set-car! d v)
+  d)
+
+(define (set-rear-ptr! d v)
+  (set-cdr! d v)
+  d)
+
+(define (make-node v)
+  (list v () ()))
+
+(define (value n)
+  (car n))
+
+(define (prev-ptr n)
+  (cadr n))
+
+(define (next-ptr n)
+  (caddr n))
+
+(define (has-next? n)
+  (not (null? (next-ptr n))))
+
+(define (has-prev? n)
+  (not (null? (prev-ptr n))))
+
+(define (set-prev-ptr! n1 n2)
+  (set-car! (cdr n1) n2)
+  n1)
+
+(define (set-next-ptr! n1 n2)
+  (set-car! (cddr n1) n2)
+  n1)
+
+(define (link-prev-node! n1 n2)
+  (set-prev-ptr! n1 n2)
+  (set-next-ptr! n2 n1))
+
+(define (unlink-prev-node! n)
+  (cond ((has-prev? n)
+		 (set-next-ptr! (prev-ptr n) ())
+		 (set-prev-ptr! n ())
+		 n)
+		(else (error "UNLINK-PREV node has no previous node" n))))
+
+(define (link-next-node! n1 n2)
+  (set-next-ptr! n1 n2)
+  (set-prev-ptr! n2 n1))
+
+(define (unlink-next-node! n)
+  (cond ((has-next? n)
+		 (set-prev-ptr! (next-ptr n) ())
+		 (set-next-ptr! n ())
+		 n)
+		(else (error "UNLINK-PREV node has no previous node" n))))
+
+(define (empty-deque? d)
+  (and (null? (front-ptr d))
+	   (null? (rear-ptr d))))
+
+(define (front-deque d)
+  (cond ((empty-deque? d)
+		 (error "FRONT deque is empty" d))
+		(else (value (front-ptr d)))))
+
+(define (rear-deque d)
+  (cond ((empty-deque? d)
+		 (error "REAR deque is empty" d))
+		(else (value (rear-ptr d)))))
+
+(define (front-insert-deque! d v)
+  (let ((node (make-node v)))
+	(cond ((empty-deque? d)
+		   (set-front-ptr! d node)
+		   (set-rear-ptr! d node)
+		   d)
+		  (else 
+			(link-prev-node! (front-ptr d) node)
+			(set-front-ptr! d node)
+			d))))
+
+(define (rear-insert-deque! d v)
+  (let ((node (make-node v)))
+	(cond ((empty-deque? d)
+		   (set-front-ptr! d node)
+		   (set-rear-ptr! d node)
+		   d)
+		  (else 
+			(link-next-node! (rear-ptr d) node)
+			(set-rear-ptr! d node)
+			d))))
+
+(define (front-delete-deque! d)
+  (cond ((empty-deque? d)
+		 (error "FRONT-DELETE deque is empty" d))
+		((has-next? (front-ptr d))
+		 (let ((new-front (next-ptr (front-ptr d))))
+		   (unlink-prev-node! new-front)
+		   (set-front-ptr! d new-front)
+		   d))
+		(else
+		  (set-front-ptr! d ())
+		  (set-rear-ptr! d ())
+		  d)))
+
+(define (rear-delete-deque! d)
+  (cond ((empty-deque? d)
+		 (error "REAR-DELETE deque is empty" d))
+		((has-prev? (rear-ptr d))
+		 (let ((new-rear (prev-ptr (rear-ptr d))))
+		   (unlink-next-node! new-rear)
+		   (set-rear-ptr! d new-rear)
+		   d))
+		(else
+		  (set-rear-ptr! d ())
+		  (set-next-ptr! d ())
+		  d)))
