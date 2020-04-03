@@ -189,3 +189,37 @@ w
 ; E9 -> E1 (x.dispatch 'car)
 
 ; 17
+
+; 21)
+(define (print-queue q)
+  (display (front-ptr q)))
+
+; 22)
+(define (make-queue)
+  (let ((front ())
+		(rear ()))
+	(define (set-front-ptr! v)
+	  (set! front v)
+	  dispatch)
+	(define (set-rear-ptr! v)
+	  (set! rear v)
+	  dispatch)
+	(define (dispatch m)
+	  (cond ((eq? m 'set-front-ptr!) set-front-ptr!)
+			((eq? m 'set-rear-ptr!) set-rear-ptr!)
+			((eq? m 'front-ptr) front)
+			((eq? m 'rear-ptr) rear)
+			(else (error "DISPATCH code not recognized" m))))
+	dispatch))
+
+(define (front-ptr q)
+  (q 'front-ptr))
+
+(define (rear-ptr q)
+  (q 'rear-ptr))
+
+(define (set-front-ptr! q v)
+  ((q 'set-front-ptr!) v))
+
+(define (set-rear-ptr! q v)
+  ((q 'set-rear-ptr!) v))
