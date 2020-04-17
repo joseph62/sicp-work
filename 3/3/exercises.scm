@@ -383,8 +383,53 @@ w
 			(else (error "Unkown command -- TABLE" m))))
 	dispatch))
 
-(define (lookup key table)
+(define (lookup table key)
   ((table 'lookup) key))
 
-(define (insert! key value table)
+(define (insert! table key value)
   ((table 'insert!) key value))
+
+; 25)
+
+(define (make-table)
+  (let ((local-table (list '*table*)))
+
+	(define (assoc key records)
+	  (cond ((null? records) #f)
+			((eq? key (caar records)) (car records))
+			(else (assoc key (cdr records)))))
+
+	(define (lookup keys)
+	  (define (lookup-iter current keys)
+		(let ((pair (assoc (car keys) current))
+			  (rest-keys (cdr keys)))
+		  (cond ((and (null? rest-keys) pair) (cdr pair))
+				(pair (lookup-iter (cdr pair) rest-keys))
+				(else #f))))
+	  (lookup-iter (cdr local-table) keys))
+
+	(define (insert! keys value)
+	  (define (insert-iter! current keys value)
+		(let ((next (assoc (car keys) (cdr current)))
+			  (rest-keys? (not (null? (cdr keys)))))
+		  (cond ((and next rest-keys?)
+				 (insert-iter! next (cdr keys) value))
+				((and (not next) rest-keys?)
+				 (let ((next (cons (car keys) ())))
+				   (set-cdr! current (cons next
+										   (cdr current)))
+				   (insert-iter! next (cdr keys) value)))
+				((and next (not rest-keys?))
+				 (set-cdr! next value))
+				(else 
+				  (let ((next (cons (car keys) value)))
+					(set-cdr! current (cons next
+											(cdr current))))))))
+	  (insert-iter! local-table keys value)
+	  'ok)
+
+	(define (dispatch m)
+	  (cond ((eq? m 'lookup) lookup)
+			((eq? m 'insert!) insert!)
+			(else (error "Unkown operation -- TABLE" m))))
+	dispatch))
