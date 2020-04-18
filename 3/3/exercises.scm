@@ -433,3 +433,68 @@ w
 			((eq? m 'insert!) insert!)
 			(else (error "Unkown operation -- TABLE" m))))
 	dispatch))
+
+; 26)
+; The current make-table implementation would need to be modified
+; in the following ways to accomodate a table tree:
+; - The table must be created with an = < > operator for the keys
+;   that are used (define (make-table = < >) ...
+; - The assoc procedure would need to be modified to operate on
+;   a tree structure using the =, <, and > for the table
+; - The insert! operation would need to be modified to correctly
+;   create the tree structure
+; - A record object should be created that models the key value pair
+;   to serve as the value for each node in the tree structure
+
+; 27)
+
+(define (fib n)
+  (cond ((= n 0) 0)
+		((= n 1) 1)
+		(else (+ (fib (- n 1))
+				 (fib (- n 2))))))
+
+(define memo-fib
+  (memoize (lambda (n)
+			 (cond ((= n 0) 0)
+				   ((= n 1) 1)
+				   (else (+ (memo-fib (- n 1))
+							(memo-fib (- n 2))))))))
+
+(define (memoize f)
+  (let ((table (make-table)))
+	(lambda (x)
+	  (let ((previous-computed-value (lookup table x)))
+		(or previous-computed-value
+			(let ((result (f x)))
+			  (insert! t x result)
+			  result))))))
+
+; Global:
+; memo-fib (memoize ...)
+; lookup
+; insert!
+
+; E1 -> Global memoize
+; table (make-table)
+
+; E2 -> Global make-table
+; local-table
+; lookup
+; insert!
+; assoc
+
+
+; (memo-fib 3)
+; E3 -> E1 (memo-fib 3) 
+
+; E4 -> Global (lookup table)
+
+; E5 -> E2 (lookup local-table)
+; E6 -> E2 assoc 
+
+; E7 -> Global (f x)
+
+
+
+
