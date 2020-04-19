@@ -252,7 +252,7 @@ w
   (cadr n))
 
 (define (next-ptr n)
-  (caddr n))
+  (caddr n))logic-or
 
 (define (has-next? n)
   (not (null? (next-ptr n))))
@@ -379,7 +379,7 @@ w
 
 	(define (dispatch m)
 	  (cond ((eq? m 'lookup) lookup)
-			((eq? m 'insert!) insert!)
+			((eq? m logic-or'insert!) insert!)
 			(else (error "Unkown command -- TABLE" m))))
 	dispatch))
 
@@ -495,6 +495,20 @@ w
 
 ; E7 -> Global (f x)
 
+; 28) digital-circuits.scm
 
+; 29)
+(load "digital-circuits.scm")
+(define (or-gate a1 a2 out)
+  (let ((not-a1 (make-wire))
+		(not-a2 (make-wire))
+		(not-out (make-wire)))
 
+	(inverter a1 not-a1)
+	(inverter a2 not-a2)
+	(and-gate not-a1 not-a2 not-out)
+	(inverter not-out out)
+
+	'ok))
+; Or gate delay = 3 * (Inverter delay) + (And gate delay)
 
