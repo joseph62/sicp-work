@@ -252,7 +252,7 @@ w
   (cadr n))
 
 (define (next-ptr n)
-  (caddr n))logic-or
+  (caddr n))
 
 (define (has-next? n)
   (not (null? (next-ptr n))))
@@ -454,13 +454,6 @@ w
 		(else (+ (fib (- n 1))
 				 (fib (- n 2))))))
 
-(define memo-fib
-  (memoize (lambda (n)
-			 (cond ((= n 0) 0)
-				   ((= n 1) 1)
-				   (else (+ (memo-fib (- n 1))
-							(memo-fib (- n 2))))))))
-
 (define (memoize f)
   (let ((table (make-table)))
 	(lambda (x)
@@ -469,6 +462,13 @@ w
 			(let ((result (f x)))
 			  (insert! t x result)
 			  result))))))
+
+(define memo-fib
+  (memoize (lambda (n)
+			 (cond ((= n 0) 0)
+				   ((= n 1) 1)
+				   (else (+ (memo-fib (- n 1))
+							(memo-fib (- n 2))))))))
 
 ; Global:
 ; memo-fib (memoize ...)
@@ -499,6 +499,7 @@ w
 
 ; 29)
 (load "digital-circuits.scm")
+
 (define (or-gate a1 a2 out)
   (let ((not-a1 (make-wire))
 		(not-a2 (make-wire))
@@ -508,7 +509,35 @@ w
 	(inverter a2 not-a2)
 	(and-gate not-a1 not-a2 not-out)
 	(inverter not-out out)
-
 	'ok))
+
 ; Or gate delay = 3 * (Inverter delay) + (And gate delay)
 
+; 30)
+(define (ripple-adder as bs ss)
+  (define (ripple-adder-iter current carry)
+	(if (null? current)
+		'ok
+		(let ((a (caar current))
+			  (b (cadar current))
+			  (s (caddar current))
+			  (next-carry (make-wire)))
+		  (full-adder a b carry s next-carry)
+		  (ripple-adder-iter (cdr current) next-carry))))
+  (ripple-adder-iter (zip as bs ss) (make-wire)))
+
+; The wait time to compute the ripple adder of as and bs
+; would be the sum of time of each full-adder because subsequent
+; full adders rely on the carry of the previous full adder
+
+; half adder:
+; 	S = 2 * and gate time + inverter gate time + or gate time
+;	C = and gate time
+
+; Full adder:
+;	SUM = 2 * S of half adder
+;   Cout = S of half adder + 2 * C of half adder + or gate delay time
+
+; Ripple adder:
+;	S1 = SUM of the full adder
+;	Sn = (n - 1) * Cout of full adder + SUM of the full adder
