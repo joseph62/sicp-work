@@ -1,3 +1,60 @@
+(load "./queues.scm")
+
+(define (make-agenda)
+
+  (define (make-item time action)
+	(list time action))
+
+  (define (item-time item) (car item))
+  (define (item-action item) (cadr item))
+
+  (let ((time 0)
+		(agenda-items (make-queue)))
+	(define (empty-agenda?)
+	  (empty-queue? agenda-items))
+
+	(define (first-agenda-item)
+	  (item-action (front-queue agenda-items)))
+
+	(define (remove-first-agenda-item!)
+	  (set! time (+ time (item-time (front-queue agenda-items))))
+	  (delete-queue! agenda-items))
+
+	(define (add-to-agenda! time action)
+	  (insert-queue! agenda-items (make-item time action)))
+
+	(define (current-time)
+	  time)
+
+	(define (dispatch m)
+	  (cond ((eq? m 'empty-agenda?) empty-agenda?)
+			((eq? m 'first-agenda-item) first-agenda-item)
+			((eq? m 'remove-first-agenda-item!) remove-first-agenda-item!)
+			((eq? m 'add-to-agenda!) add-to-agenda!)
+			((eq? m 'current-time) current-time)
+			(else (error "Unkown operation -- AGENDA" m))))
+	dispatch))
+
+(define (empty-agenda? agenda)
+  ((agenda 'empty-agenda?)))
+
+(define (first-agenda-item agenda)
+  ((agenda 'first-agenda-item)))
+
+(define (remove-first-agenda-item! agenda)
+  ((agenda 'remove-first-agenda-item!)))
+
+(define (add-to-agenda! time action agenda)
+  ((agenda 'add-to-agenda!) time action))
+
+(define (current-time agenda)
+  ((agenda 'current-time)))
+
+(define the-agenda (make-agenda))
+(define inverter-delay 2)
+(define and-gate-delay 3)
+(define or-gate-delay 5)
+
 (define (make-wire)
   (list 0 (list)))
 
@@ -14,13 +71,32 @@
 			(cons thunk 
 				  (cadr wire))))
 
-(define (after-delay time f)
-  (f))
+(define (after-delay delay action)
+  (add-to-agenda! (+ delay (current-time the-agenda))
+				  action
+				  the-agenda))
+
+(define (propogate)
+  (if (empty-agenda? the-agenda)
+	  'done
+	  (let ((first-item (first-agenda-item the-agenda)))
+		(first-item)
+		(remove-first-agenda-item! the-agenda)
+		(propogate))))
+
+(define (probe name wire)
+  (add-action! wire
+			  (lambda ()
+				(newline)
+				(display name)
+				(display " ")
+				(display (current-time the-agenda))
+				(display "  New-value = ")
+				(display (get-signal wire)))))
 
 (define (inverter input output)
   (define (invert-input)
-	(let ((new-value (logical-not (get-signal input)))
-		  (inverter-delay 1))
+	(let ((new-value (logical-not (get-signal input))))
 	  (after-delay inverter-delay
 				   (lambda ()
 					 (set-signal! output new-value)))))
@@ -34,9 +110,7 @@
 
 (define (and-gate a1 a2 output)
   (define (and-action-procedure)
-	(let ((new-value
-			(logical-and (get-signal a1) (get-signal a2)))
-		  (and-gate-delay 1))
+	(let ((new-value (logical-and (get-signal a1) (get-signal a2))))
 	  (after-delay and-gate-delay
 				   (lambda ()
 					 (set-signal! output new-value)))))
@@ -53,9 +127,7 @@
 
 (define (or-gate a1 a2 output)
   (define (or-action-procedure)
-	(let ((new-value
-			(logical-or (get-signal a1) (get-signal a2)))
-		  (or-gate-delay 1))
+	(let ((new-value (logical-or (get-signal a1) (get-signal a2))))
 	  (after-delay or-gate-delay
 				   (lambda ()
 					 (set-signal! output new-value)))))
@@ -139,3 +211,20 @@
 (define (add-action! wire action)
   ((wire 'add-action!) action))
 
+(define input-1 (make-wire))
+(define input-2 (make-wire))
+(define sum (make-wire))
+(define carry (make-wire))
+
+(probe 'sum sum)
+(probe 'carry carry)
+
+(half-adder input-1 input-2 sum carry)
+
+(set-signal! input-1 1)
+
+(propogate)
+
+(set-signal! input-2 1)
+
+(propogate)
