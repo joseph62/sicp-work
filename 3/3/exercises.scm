@@ -541,3 +541,7 @@ w
 ; Ripple adder:
 ;	S1 = SUM of the full adder
 ;	Sn = (n - 1) * Cout of full adder + SUM of the full adder
+
+; 31) Removing the action call in add-action! 
+; means that the state of the circuit will only be correct
+; when a signal is next set
