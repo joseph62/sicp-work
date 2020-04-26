@@ -1,8 +1,8 @@
 ; 12)
 (define (append x y)
   (if (null? x)
-	  y
-	  (cons (car x) (append (cdr x) y))))
+      y
+      (cons (car x) (append (cdr x) y))))
 
 (define (append! x y)
   (set-cdr! (last-pair x) y)
@@ -10,8 +10,8 @@
 
 (define (last-pair x)
   (cond ((null? x) (error "Operand cannot be null -- LAST-PAIR" x))
-		((null? (cdr x)) x)
-		(else (last-pair (cdr x)))))
+        ((null? (cdr x)) x)
+        (else (last-pair (cdr x)))))
 
 (define x '(a b))
 (define y '(c d))
@@ -42,16 +42,16 @@ w
 
 (define cycle (make-cycle '(a b c)))
 ; (last-pair cycle) -> Will go on forever because the very last reference in the list is 
-; 						a reference to the head of the list and not null
+;                       a reference to the head of the list and not null
 
 ; 14)
 (define (mystery x)
   (define (loop x y)
-	(if (null? x)
-		y
-		(let ((temp (cdr x)))
-		  (set-cdr! x y)
-		  (loop temp x))))
+    (if (null? x)
+        y
+        (let ((temp (cdr x)))
+          (set-cdr! x y)
+          (loop temp x))))
   (loop x '()))
 
 ; This mystery procedure reverses the given list using mutation.
@@ -75,10 +75,10 @@ w
 
 (define (count-pairs x)
   (if (not (pair? x))
-	  0
-	  (+ (count-pairs (car x))
-		 (count-pairs (cdr x))
-		 1)))
+      0
+      (+ (count-pairs (car x))
+         (count-pairs (cdr x))
+         1)))
 
 (count-pairs (list 1 2 3))
 ; 3
@@ -98,8 +98,8 @@ w
 ; 17)
 (define (contains? x xs)
   (cond ((null? xs) #f)
-		((eq? x (car xs)) #t)
-		(else (contains? x (cdr xs)))))
+        ((eq? x (car xs)) #t)
+        (else (contains? x (cdr xs)))))
 
 (define (adjoin x xs)
   (cons x xs))
@@ -107,13 +107,13 @@ w
 (define (count-pairs x)
   (define processed ())
   (define (count-pairs-iter x)
-	(cond ((not (pair? x)) 0)
-		  ((contains? x processed) 0)
-		  (else 
-			(set! processed (adjoin x processed))
-			(+ (count-pairs-iter (car x))
-			   (count-pairs-iter (cdr x))
-			   1))))
+    (cond ((not (pair? x)) 0)
+          ((contains? x processed) 0)
+          (else 
+            (set! processed (adjoin x processed))
+            (+ (count-pairs-iter (car x))
+               (count-pairs-iter (cdr x))
+               1))))
   (count-pairs-iter x))
 
 (count-pairs (list 1 2 3))
@@ -128,21 +128,21 @@ w
 ; 18)
 (define (has-cycle? items)
   (define (has-cycle-iter? items processed)
-	(cond ((null? items) #f)
-		  ((contains? items processed) #t)
-		  (else (has-cycle-iter? (cdr items)
-								 (adjoin items processed)))))
+    (cond ((null? items) #f)
+          ((contains? items processed) #t)
+          (else (has-cycle-iter? (cdr items)
+                                 (adjoin items processed)))))
   (has-cycle-iter? items ()))
 
 ; 19)
 (define (has-cycle? items)
   (define (has-cycle-iter? items first)
-	(cond ((null? items) #f)
-		  ((eq? items first) #t)
-		  (else 
-			(has-cycle-iter? (cdr items) first))))
+    (cond ((null? items) #f)
+          ((eq? items first) #t)
+          (else 
+            (has-cycle-iter? (cdr items) first))))
   (and (not (null? items))
-	   (has-cycle-iter? (cdr items) items)))
+       (has-cycle-iter? (cdr items) items)))
 
 ; 20)
 (define x (cons 1 2))
@@ -197,20 +197,20 @@ w
 ; 22)
 (define (make-queue)
   (let ((front ())
-		(rear ()))
-	(define (set-front-ptr! v)
-	  (set! front v)
-	  dispatch)
-	(define (set-rear-ptr! v)
-	  (set! rear v)
-	  dispatch)
-	(define (dispatch m)
-	  (cond ((eq? m 'set-front-ptr!) set-front-ptr!)
-			((eq? m 'set-rear-ptr!) set-rear-ptr!)
-			((eq? m 'front-ptr) front)
-			((eq? m 'rear-ptr) rear)
-			(else (error "DISPATCH code not recognized" m))))
-	dispatch))
+        (rear ()))
+    (define (set-front-ptr! v)
+      (set! front v)
+      dispatch)
+    (define (set-rear-ptr! v)
+      (set! rear v)
+      dispatch)
+    (define (dispatch m)
+      (cond ((eq? m 'set-front-ptr!) set-front-ptr!)
+            ((eq? m 'set-rear-ptr!) set-rear-ptr!)
+            ((eq? m 'front-ptr) front)
+            ((eq? m 'rear-ptr) rear)
+            (else (error "DISPATCH code not recognized" m))))
+    dispatch))
 
 (define (front-ptr q)
   (q 'front-ptr))
@@ -274,10 +274,10 @@ w
 
 (define (unlink-prev-node! n)
   (cond ((has-prev? n)
-		 (set-next-ptr! (prev-ptr n) ())
-		 (set-prev-ptr! n ())
-		 n)
-		(else (error "UNLINK-PREV node has no previous node" n))))
+         (set-next-ptr! (prev-ptr n) ())
+         (set-prev-ptr! n ())
+         n)
+        (else (error "UNLINK-PREV node has no previous node" n))))
 
 (define (link-next-node! n1 n2)
   (set-next-ptr! n1 n2)
@@ -285,103 +285,103 @@ w
 
 (define (unlink-next-node! n)
   (cond ((has-next? n)
-		 (set-prev-ptr! (next-ptr n) ())
-		 (set-next-ptr! n ())
-		 n)
-		(else (error "UNLINK-PREV node has no previous node" n))))
+         (set-prev-ptr! (next-ptr n) ())
+         (set-next-ptr! n ())
+         n)
+        (else (error "UNLINK-PREV node has no previous node" n))))
 
 (define (empty-deque? d)
   (and (null? (front-ptr d))
-	   (null? (rear-ptr d))))
+       (null? (rear-ptr d))))
 
 (define (front-deque d)
   (cond ((empty-deque? d)
-		 (error "FRONT deque is empty" d))
-		(else (value (front-ptr d)))))
+         (error "FRONT deque is empty" d))
+        (else (value (front-ptr d)))))
 
 (define (rear-deque d)
   (cond ((empty-deque? d)
-		 (error "REAR deque is empty" d))
-		(else (value (rear-ptr d)))))
+         (error "REAR deque is empty" d))
+        (else (value (rear-ptr d)))))
 
 (define (front-insert-deque! d v)
   (let ((node (make-node v)))
-	(cond ((empty-deque? d)
-		   (set-front-ptr! d node)
-		   (set-rear-ptr! d node)
-		   d)
-		  (else 
-			(link-prev-node! (front-ptr d) node)
-			(set-front-ptr! d node)
-			d))))
+    (cond ((empty-deque? d)
+           (set-front-ptr! d node)
+           (set-rear-ptr! d node)
+           d)
+          (else 
+            (link-prev-node! (front-ptr d) node)
+            (set-front-ptr! d node)
+            d))))
 
 (define (rear-insert-deque! d v)
   (let ((node (make-node v)))
-	(cond ((empty-deque? d)
-		   (set-front-ptr! d node)
-		   (set-rear-ptr! d node)
-		   d)
-		  (else 
-			(link-next-node! (rear-ptr d) node)
-			(set-rear-ptr! d node)
-			d))))
+    (cond ((empty-deque? d)
+           (set-front-ptr! d node)
+           (set-rear-ptr! d node)
+           d)
+          (else 
+            (link-next-node! (rear-ptr d) node)
+            (set-rear-ptr! d node)
+            d))))
 
 (define (front-delete-deque! d)
   (cond ((empty-deque? d)
-		 (error "FRONT-DELETE deque is empty" d))
-		((has-next? (front-ptr d))
-		 (let ((new-front (next-ptr (front-ptr d))))
-		   (unlink-prev-node! new-front)
-		   (set-front-ptr! d new-front)
-		   d))
-		(else
-		  (set-front-ptr! d ())
-		  (set-rear-ptr! d ())
-		  d)))
+         (error "FRONT-DELETE deque is empty" d))
+        ((has-next? (front-ptr d))
+         (let ((new-front (next-ptr (front-ptr d))))
+           (unlink-prev-node! new-front)
+           (set-front-ptr! d new-front)
+           d))
+        (else
+          (set-front-ptr! d ())
+          (set-rear-ptr! d ())
+          d)))
 
 (define (rear-delete-deque! d)
   (cond ((empty-deque? d)
-		 (error "REAR-DELETE deque is empty" d))
-		((has-prev? (rear-ptr d))
-		 (let ((new-rear (prev-ptr (rear-ptr d))))
-		   (unlink-next-node! new-rear)
-		   (set-rear-ptr! d new-rear)
-		   d))
-		(else
-		  (set-rear-ptr! d ())
-		  (set-next-ptr! d ())
-		  d)))
+         (error "REAR-DELETE deque is empty" d))
+        ((has-prev? (rear-ptr d))
+         (let ((new-rear (prev-ptr (rear-ptr d))))
+           (unlink-next-node! new-rear)
+           (set-rear-ptr! d new-rear)
+           d))
+        (else
+          (set-rear-ptr! d ())
+          (set-next-ptr! d ())
+          d)))
 
 ; 24)
 (define (make-table same-key?)
   (let ((local-table (list '*table*)))
 
-	(define (records table)
-	  (cdr table))
+    (define (records table)
+      (cdr table))
 
-	(define (assoc key records)
-	  (cond ((null? records) #f)
-			((same-key? key (caar records)) (car records))
-			(else (assoc key (cdr records)))))
+    (define (assoc key records)
+      (cond ((null? records) #f)
+            ((same-key? key (caar records)) (car records))
+            (else (assoc key (cdr records)))))
 
-	(define (lookup key)
-	  (let ((record (assoc key (records local-table))))
-		(if record
-		  (cdr record)
-		  #f)))
+    (define (lookup key)
+      (let ((record (assoc key (records local-table))))
+        (if record
+          (cdr record)
+          #f)))
 
-	(define (insert! key value)
-	  (let ((record (assoc key (records local-table))))
-		(if record
-		  (set-cdr! record value)
-		  (set-cdr! local-table (cons (cons key value)
-									  (records local-table))))))
+    (define (insert! key value)
+      (let ((record (assoc key (records local-table))))
+        (if record
+          (set-cdr! record value)
+          (set-cdr! local-table (cons (cons key value)
+                                      (records local-table))))))
 
-	(define (dispatch m)
-	  (cond ((eq? m 'lookup) lookup)
-			((eq? m logic-or'insert!) insert!)
-			(else (error "Unkown command -- TABLE" m))))
-	dispatch))
+    (define (dispatch m)
+      (cond ((eq? m 'lookup) lookup)
+            ((eq? m logic-or'insert!) insert!)
+            (else (error "Unkown command -- TABLE" m))))
+    dispatch))
 
 (define (lookup table key)
   ((table 'lookup) key))
@@ -394,45 +394,45 @@ w
 (define (make-table)
   (let ((local-table (list '*table*)))
 
-	(define (assoc key records)
-	  (cond ((null? records) #f)
-			((eq? key (caar records)) (car records))
-			(else (assoc key (cdr records)))))
+    (define (assoc key records)
+      (cond ((null? records) #f)
+            ((eq? key (caar records)) (car records))
+            (else (assoc key (cdr records)))))
 
-	(define (lookup keys)
-	  (define (lookup-iter current keys)
-		(let ((pair (assoc (car keys) current))
-			  (rest-keys (cdr keys)))
-		  (cond ((and (null? rest-keys) pair) (cdr pair))
-				(pair (lookup-iter (cdr pair) rest-keys))
-				(else #f))))
-	  (lookup-iter (cdr local-table) keys))
+    (define (lookup keys)
+      (define (lookup-iter current keys)
+        (let ((pair (assoc (car keys) current))
+              (rest-keys (cdr keys)))
+          (cond ((and (null? rest-keys) pair) (cdr pair))
+                (pair (lookup-iter (cdr pair) rest-keys))
+                (else #f))))
+      (lookup-iter (cdr local-table) keys))
 
-	(define (insert! keys value)
-	  (define (insert-iter! current keys value)
-		(let ((next (assoc (car keys) (cdr current)))
-			  (rest-keys? (not (null? (cdr keys)))))
-		  (cond ((and next rest-keys?)
-				 (insert-iter! next (cdr keys) value))
-				((and (not next) rest-keys?)
-				 (let ((next (cons (car keys) ())))
-				   (set-cdr! current (cons next
-										   (cdr current)))
-				   (insert-iter! next (cdr keys) value)))
-				((and next (not rest-keys?))
-				 (set-cdr! next value))
-				(else 
-				  (let ((next (cons (car keys) value)))
-					(set-cdr! current (cons next
-											(cdr current))))))))
-	  (insert-iter! local-table keys value)
-	  'ok)
+    (define (insert! keys value)
+      (define (insert-iter! current keys value)
+        (let ((next (assoc (car keys) (cdr current)))
+              (rest-keys? (not (null? (cdr keys)))))
+          (cond ((and next rest-keys?)
+                 (insert-iter! next (cdr keys) value))
+                ((and (not next) rest-keys?)
+                 (let ((next (cons (car keys) ())))
+                   (set-cdr! current (cons next
+                                           (cdr current)))
+                   (insert-iter! next (cdr keys) value)))
+                ((and next (not rest-keys?))
+                 (set-cdr! next value))
+                (else 
+                  (let ((next (cons (car keys) value)))
+                    (set-cdr! current (cons next
+                                            (cdr current))))))))
+      (insert-iter! local-table keys value)
+      'ok)
 
-	(define (dispatch m)
-	  (cond ((eq? m 'lookup) lookup)
-			((eq? m 'insert!) insert!)
-			(else (error "Unkown operation -- TABLE" m))))
-	dispatch))
+    (define (dispatch m)
+      (cond ((eq? m 'lookup) lookup)
+            ((eq? m 'insert!) insert!)
+            (else (error "Unkown operation -- TABLE" m))))
+    dispatch))
 
 ; 26)
 ; The current make-table implementation would need to be modified
@@ -450,25 +450,25 @@ w
 
 (define (fib n)
   (cond ((= n 0) 0)
-		((= n 1) 1)
-		(else (+ (fib (- n 1))
-				 (fib (- n 2))))))
+        ((= n 1) 1)
+        (else (+ (fib (- n 1))
+                 (fib (- n 2))))))
 
 (define (memoize f)
   (let ((table (make-table)))
-	(lambda (x)
-	  (let ((previous-computed-value (lookup table x)))
-		(or previous-computed-value
-			(let ((result (f x)))
-			  (insert! t x result)
-			  result))))))
+    (lambda (x)
+      (let ((previous-computed-value (lookup table x)))
+        (or previous-computed-value
+            (let ((result (f x)))
+              (insert! t x result)
+              result))))))
 
 (define memo-fib
   (memoize (lambda (n)
-			 (cond ((= n 0) 0)
-				   ((= n 1) 1)
-				   (else (+ (memo-fib (- n 1))
-							(memo-fib (- n 2))))))))
+             (cond ((= n 0) 0)
+                   ((= n 1) 1)
+                   (else (+ (memo-fib (- n 1))
+                            (memo-fib (- n 2))))))))
 
 ; Global:
 ; memo-fib (memoize ...)
@@ -502,28 +502,28 @@ w
 
 (define (or-gate a1 a2 out)
   (let ((not-a1 (make-wire))
-		(not-a2 (make-wire))
-		(not-out (make-wire)))
+        (not-a2 (make-wire))
+        (not-out (make-wire)))
 
-	(inverter a1 not-a1)
-	(inverter a2 not-a2)
-	(and-gate not-a1 not-a2 not-out)
-	(inverter not-out out)
-	'ok))
+    (inverter a1 not-a1)
+    (inverter a2 not-a2)
+    (and-gate not-a1 not-a2 not-out)
+    (inverter not-out out)
+    'ok))
 
 ; Or gate delay = 3 * (Inverter delay) + (And gate delay)
 
 ; 30)
 (define (ripple-adder as bs ss)
   (define (ripple-adder-iter current carry)
-	(if (null? current)
-		'ok
-		(let ((a (caar current))
-			  (b (cadar current))
-			  (s (caddar current))
-			  (next-carry (make-wire)))
-		  (full-adder a b carry s next-carry)
-		  (ripple-adder-iter (cdr current) next-carry))))
+    (if (null? current)
+        'ok
+        (let ((a (caar current))
+              (b (cadar current))
+              (s (caddar current))
+              (next-carry (make-wire)))
+          (full-adder a b carry s next-carry)
+          (ripple-adder-iter (cdr current) next-carry))))
   (ripple-adder-iter (zip as bs ss) (make-wire)))
 
 ; The wait time to compute the ripple adder of as and bs
@@ -531,16 +531,16 @@ w
 ; full adders rely on the carry of the previous full adder
 
 ; half adder:
-; 	S = 2 * and gate time + inverter gate time + or gate time
-;	C = and gate time
+;   S = 2 * and gate time + inverter gate time + or gate time
+;   C = and gate time
 
 ; Full adder:
-;	SUM = 2 * S of half adder
+;   SUM = 2 * S of half adder
 ;   Cout = S of half adder + 2 * C of half adder + or gate delay time
 
 ; Ripple adder:
-;	S1 = SUM of the full adder
-;	Sn = (n - 1) * Cout of full adder + SUM of the full adder
+;   S1 = SUM of the full adder
+;   Sn = (n - 1) * Cout of full adder + SUM of the full adder
 
 ; 31) Removing the action call in add-action! 
 ; means that the state of the circuit will only be correct

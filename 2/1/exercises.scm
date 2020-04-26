@@ -2,16 +2,16 @@
 
 (define (negative-rat? n d)
   (or (and (positive? n) (negative? d))
-	  (and (negative? n) (positive? d))))
+      (and (negative? n) (positive? d))))
 
 (define (make-rat n d)
   (let ((g (gcd n d))
-		(sign (if (negative-rat? n d) 
-				-1 
-				1)))
-	(cons (* (abs (/ n g))
-			 sign)
-		  (abs (/ d g)))))
+        (sign (if (negative-rat? n d) 
+                -1 
+                1)))
+    (cons (* (abs (/ n g))
+             sign)
+          (abs (/ d g)))))
 
 ; 2)
 
@@ -138,16 +138,16 @@
 ;
 ;(define (car pair)
 ;  (define (iter total pair)
-;	(if (divisible? pair 2)
-;		(iter (inc total) (/ pair 2))
-;		total))
+;   (if (divisible? pair 2)
+;       (iter (inc total) (/ pair 2))
+;       total))
 ;  (iter 0 pair))
 ;
 ;(define (cdr pair)
 ;  (define (iter total pair)
-;	(if (divisible? pair 3)
-;		(iter (inc total) (/ pair 3))
-;		total))
+;   (if (divisible? pair 3)
+;       (iter (inc total) (/ pair 3))
+;       total))
 ;  (iter 0 pair))
 ;
 ; 6)

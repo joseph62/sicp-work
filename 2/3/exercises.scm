@@ -24,8 +24,8 @@
 ; 54)
 (define (equal? a b)
   (cond ((and (null? a) (null? b)) #t)
-		((not (eq? (car a) (car b))) #f)
-		(else (equal? (cdr a) (cdr b)))))
+        ((not (eq? (car a) (car b))) #f)
+        (else (equal? (cdr a) (cdr b)))))
 
 ; 55)
 ; 'ab functionally (quote ab)

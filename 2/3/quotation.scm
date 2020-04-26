@@ -18,6 +18,6 @@
 
 (define (memq item items)
   (cond ((null? items) ())
-		((eq? item (car items)) items)
-		(else (memq item (cdr items)))))
+        ((eq? item (car items)) items)
+        (else (memq item (cdr items)))))
 

@@ -20,9 +20,9 @@
 
 (define (conss x y)
   (let ((new (get-new-pair)))
-	(set-car! new x)
-	(set-cdr! new y)
-	new))
+    (set-car! new x)
+    (set-cdr! new y)
+    new))
 
 (define x '(a b))
 
@@ -57,11 +57,11 @@ z2
   (define (set-x! v) (set! x v))
   (define (set-y! v) (set! y v))
   (define (dispatch m)
-	(cond ((eq? m 'car) x)
-		  ((eq? m 'cdr) y)
-		  ((eq? m 'set-car!) set-x!)
-		  ((eq? m 'set-cdr!) set-y!)
-		  (else (error "Undefined operation -- CONS" m))))
+    (cond ((eq? m 'car) x)
+          ((eq? m 'cdr) y)
+          ((eq? m 'set-car!) set-x!)
+          ((eq? m 'set-cdr!) set-y!)
+          (else (error "Undefined operation -- CONS" m))))
   dispatch)
 
 (define (car z) (z 'car))

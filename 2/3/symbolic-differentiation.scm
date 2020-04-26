@@ -31,7 +31,7 @@
 
 (define (sum? e)
   (and (pair? e) 
-	   (eq? (operation e) '+)))
+       (eq? (operation e) '+)))
 
 ; 57)
 (define (make-product a . rest)
@@ -53,18 +53,18 @@
 
 (define (product? e)
   (and (pair? e)
-	   (eq? (operation e) '*)))
+       (eq? (operation e) '*)))
 
 ; 56)
 
 (define (make-exponent b p)
   (cond ((=number? b 0) 0)
-		((=number? b 1) 1)
-		((=number? p 0) 1)
-		((=number? p 1) b)
-		((and (number? b) (number? p)) (expt b p))
+        ((=number? b 1) 1)
+        ((=number? p 0) 1)
+        ((=number? p 1) b)
+        ((and (number? b) (number? p)) (expt b p))
     ; 58)
-		(else '(b ** p))))
+        (else '(b ** p))))
 
 (define (base e)
   (car e))
@@ -92,26 +92,26 @@
 
 (define (deriv e var)
   (cond ((number? e) 0)
-		((variable? e)
-		 (if (same-variable? e var) 1 0))
-		((sum? e)
-		 (make-sum (deriv (addend e) var)
+        ((variable? e)
+         (if (same-variable? e var) 1 0))
+        ((sum? e)
+         (make-sum (deriv (addend e) var)
                (deriv (augend e) var)))
-		((product? e)
-		 (make-sum (make-product (multiplier e)
+        ((product? e)
+         (make-sum (make-product (multiplier e)
                              (deriv (multiplicand e) var))
                (make-product (deriv (multiplier e) var)
                              (multiplicand e))))
-		; 56) cont....
+        ; 56) cont....
     ((difference? e)
      (make-difference (deriv (subtrahend e) var)
                       (deriv (minuend e) var)))
-		((exponent? e)
+        ((exponent? e)
      (make-product (power e)
                    (make-product (make-exponent (base e)
                                                 (make-difference (power e) 1))
                                  (derive (base e) var))))
-		(else
+        (else
       (error "unknown expression type -- DERIV" e))))
 
 
