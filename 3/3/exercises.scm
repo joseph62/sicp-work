@@ -545,3 +545,10 @@ w
 ; 31) Removing the action call in add-action! 
 ; means that the state of the circuit will only be correct
 ; when a signal is next set
+
+; 32) The segments must be fifo because each action that enters the
+; system must be executed in the order it was inserted into the list
+; so even if two actions occur within the same segment, the first action
+; must be executed before the second action.
+
+

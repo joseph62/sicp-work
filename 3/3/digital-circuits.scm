@@ -50,6 +50,15 @@
 (define (current-time agenda)
   ((agenda 'current-time)))
 
+(define (make-time-segment time queue)
+  (cons time queue))
+
+(define (segment-time segment)
+  (car segment))
+
+(define (segment-queue segment)
+  (cdr segment))
+
 (define (make-agenda) (list 0))
 
 (define (current-time agenda) (car agenda))
@@ -62,7 +71,7 @@
 (define (set-segments! agenda segments)
   (set-cdr! agenda segments))
 
-(define (first-segments agenda) (car (segments agenda)))
+(define (first-segment agenda) (car (segments agenda)))
 
 (define (rest-segments agenda) (cdr (segments agenda)))
 
@@ -94,6 +103,19 @@
         (set-segments! agenda (cons (make-new-time-segment)
                                      segments))
         (add-to-segments! segments))))
+
+(define (remove-first-agenda-item! agenda)
+  (let ((q (segment-queue (first-segment agenda))))
+    (delete-queue! q)
+    (if (empty-queue? q)
+        (set-segments! agenda (rest-segments first-segment)))))
+
+(define (first-agenda-item agenda)
+  (if (empty-agenda? agenda)
+      (error "Agenda is empty -- FIRST-AGENDA-ITEM")
+      (let ((first-segment (first-segment agenda)))
+        (set-current-time! agenda (segment-time first-segment))
+        (front-queue (segment-queue first-segment)))))
 
 
 (define the-agenda (make-agenda))
