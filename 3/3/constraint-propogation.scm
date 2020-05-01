@@ -1,0 +1,102 @@
+(define (has-value? c)
+  #t)
+
+(define (get-value c)
+  ())
+
+(define (set-value! c new-value informant)
+  'ok)
+
+(define (forget-value! c informant)
+  'ok)
+
+(define (connect c constraint)
+  ())
+
+(define (inform-about-value constraint)
+  (constraint 'I-have-a-value))
+
+(define (inform-about-no-value constraint)
+  (constraint 'I-lost-my-value))
+
+(define (adder a1 a2 s)
+  (define (process-new-value)
+    (cond ((and (has-value? a1) (has-value? a2))
+           (set-value! sum
+                       (+ (get-value a1) (get-value a2))
+                       me))
+          ((and (has-value? a1) (has-value? s))
+           (set-value! a2
+                       (- (get-value s) (get-value a1))
+                       me))
+          ((and (has-value? a2) (has-value? s))
+           (set-value! a1
+                       (- (get-value s) (get-value a2))
+                       me))))
+  (define (process-forget-value)
+    (forget-value! s me)
+    (forget-value! a1 me)
+    (forget-value! a2 me)
+    (process-new-value))
+  (define (me request)
+    (cond ((eq? request 'I-have-a-value) (process-new-value))
+          ((eq? request 'I-lost-a-value) (process-forget-value))
+          (else
+            (error "Unknown request -- ADDER" request))))
+  (connect a1 me)
+  (connect a2 me)
+  (connect s me)
+  me)
+
+(define (multiplier m1 m2 p)
+  (define (process-new-value)
+    (cond ((or (and (has-value? m1) (= (get-value m1) 0))
+               (and (has-value? m2) (= (get-value m2) 0)))
+           (set-value! p 0 me))
+          ((and (has-value? m1) (has-value? m2))
+           (set-value! p
+                       (* (get-value m1) (get-value m2))
+                       me))
+          ((and (has-value? m1) (has-value? p))
+           (set-value! m2
+                       (/ (get-value p) (get-value m1))
+                       me))
+          ((and (has-value? m2) (has-value? p))
+           (set-value! m1
+                       (/ (get-value p) (get-value m2))
+                       me))))
+  (define (process-forget-value)
+    (forget-value! p me)
+    (forget-value! p me)
+    (forget-value! p me)
+    (process-new-value))
+  (define (me request)
+    (cond ((eq? request 'I-have-a-value)
+           (process-new-value))
+          ((eq? request 'I-lost-a-value)
+           (process-forget-value))
+          (else
+            (error "Unknown request -- MULTIPLIER" request))))
+  (connect m1 me)
+  (connect m2 me)
+  (connect p me)
+  me)
+  'ok)
+
+(define (constant value c)
+  'ok)
+
+(define (celsius-fahrenheit-converter c f)
+  (let ((u (make-connector))
+        (v (make-connector))
+        (w (make-connector))
+        (x (make-connector))
+        (y (make-connector)))
+    (multiplier c w u)
+    (multiplier v x u)
+    (adder v y f)
+    (constant 9 w)
+    (constant 5 x)
+    (constant 32 y)
+    'ok))
+
