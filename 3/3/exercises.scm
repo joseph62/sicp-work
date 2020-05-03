@@ -551,4 +551,13 @@ w
 ; so even if two actions occur within the same segment, the first action
 ; must be executed before the second action.
 
-
+; 33)
+; (a + b)/2 = c
+(load "constraint-propogation.scm")
+(define (averager a b c)
+ (let ((a-b-product (make-connector))
+       (half (make-connector)))
+   (constant 0.5 half)
+   (multiplier a b a-b-product)
+   (multiplier a-b-product half c)
+   'ok))
