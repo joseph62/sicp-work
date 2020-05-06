@@ -561,3 +561,128 @@ w
    (multiplier a b a-b-product)
    (multiplier a-b-product half c)
    'ok))
+
+; 34)
+(define (squarer a b)
+  (multiplier a a b))
+; This implementation of the squarer will only work by setting a.
+; Calculating a based on b will never happen because multiplier will
+; check for values in two of the three connectors. So when a is set the
+; formula will compute b, but if only b is set, the multiplier will not calculate a
+
+; 35)
+(define (squarer a b)
+  (define (process-new-value)
+    (if (has-value? b)
+        (if (< (get-value b) 0)
+            (error "square less than 0 -- SQUARER" (get-value b))
+            (set-value! a
+                        (sqrt (get-value b))
+                        me))
+        (set-value! b (* a a) me)))
+  (define (process-forget-value)
+    (forget-value! a me)
+    (forget-value! b me)
+    (process-new-value))
+  (define (me request)
+    (cond ((eq? request 'I-have-a-value)
+           (process-new-value))
+          ((eq? request 'I-lost-a-value)
+           (process-forget-value))
+          (else
+            (error "Unknown request -- SQUARER" request))))
+  me)
+
+; 36)
+
+(define a (make-connector))
+
+; Global:
+; squarer
+; get-value
+; has-value?
+; set-value!
+; forget-value!
+; a: me, E1
+
+; E1 -> Global: a (make-connector)
+; value: #f
+; informant: #f
+; constraints: ()
+; set-my-value!
+; forget-my-value!
+; connect
+; me
+
+(define b (make-connector))
+; E2 -> Global: b (make-connector)
+; value: #f
+; informant: #f
+; constraints: ()
+; set-my-value!
+; forget-my-value!
+; connect
+; me
+
+; Global:
+; b: me, E2
+
+(set-value! a 10 'user)
+
+; E3 -> Global: set-value! 
+; c: a
+; new-value: 10
+; informant: 'user
+
+; E4 -> E1 (me 'set-value!)
+; request: 'set-value!
+
+; E5 -> E1 (set-my-value! 10 'user)
+; new-value: 10
+; setter: 'user
+
+; E6 -> Global (has-value? me)
+; c: me
+
+; E7 -> E1 (me 'has-value)
+; request: 'has-value
+
+; E8 -> Global (set! value 10)
+; name: value
+; value: 10
+
+; E9 -> Global (set! informant 'user)
+; name: informant
+; value: 'user
+
+; E10 -> Global (for-each-except 'user inform-about-value ())
+; exception: 'user
+; procedure: inform-about-value
+; list: ()
+
+; 37)
+
+(define (c+ x y)
+  (let ((z (make-connector)))
+    (adder x y z)
+    z))
+
+(define (c- x y)
+  (let ((z (make-connector)))
+    (subtractor x y z)
+    z))
+
+(define (c* x y)
+  (let ((z (make-connector)))
+    (multiplier x y z)
+    z))
+
+(define (c/ x y)
+  (let ((z (make-connector)))
+    (divisor x y z)
+    z))
+
+(define (cv value)
+  (let ((v (make-connector)))
+    (constant value v)
+    v))
