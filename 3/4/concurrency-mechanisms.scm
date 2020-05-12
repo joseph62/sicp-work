@@ -91,7 +91,7 @@
              (if (test-and-set! cell)
                  (the-mutex 'acquire)))
             ((eq? m 'release) (clear! cell))))
-  the-mutex))
+    the-mutex))
 
 (define (clear! cell)
   (set-car! cell false))
