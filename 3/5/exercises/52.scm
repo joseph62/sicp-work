@@ -19,3 +19,7 @@
 ; sum = 210
 ; 10 15 45 55 105 120 190 210
 
+; The memoization does not factor in for the above usages
+; because the stream delay objects are not reused. rather
+; the usages of y and z trade off advancing seq
+
