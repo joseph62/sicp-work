@@ -19,6 +19,8 @@
       (cons-stream (f (stream-car s))
                    (stream-map f (stream-cdr s)))))
 
+(load "exercises/50.scm")
+
 (define (stream-for-each f s)
   (if (stream-null? s)
       'done

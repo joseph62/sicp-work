@@ -31,7 +31,7 @@
 (stream-ref primes 50)
 ; 233
 
-(define ones (cons-stream 1 ones))
+(define one (cons-stream 1 one))
 
 (define (repeat n)
   (cons-stream n (repeat n)))
@@ -53,8 +53,6 @@
                                               (cons (stream-cdr (car streams)))
                                                     (cdr streams))))))
 
-
-
 (define (add-streams s1 s2)
   (stream-map + s1 s2))
 
@@ -69,3 +67,15 @@
   (stream-map (lambda (x) (* x factor)) stream))
 
 (define double (cons-stream 1 (scale-stream double 2)))
+
+(define (primes? n)
+  (define (iter ps)
+    (cond ((> (square (stream-car ps)) n) #t)
+          ((divisible? n (stream-car ps)) #f)
+          (else (iter (stream-cdr ps)))))
+  (iter primes))
+
+(define primes
+  (cons-stream
+    2
+    (stream-filter primes? (integers-starting-from 3))))
