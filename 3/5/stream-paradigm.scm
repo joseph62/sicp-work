@@ -35,3 +35,53 @@
 (define (accelerated-sequence transform s)
   (stream-map stream-car 
               (make-tableau transform s)))
+
+(define (stream-chain stream-of-streams)
+  (cond ((stream-null? stream-of-streams) the-empty-stream)
+        ((stream-null? (stream-car stream-of-streams)) 
+         (stream-chain (stream-cdr stream-of-streams)))
+        (else 
+          (let ((first-stream (stream-car stream-of-streams))
+                (rest-streams (stream-cdr stream-of-streams)))
+            (cons-stream (stream-car first-stream)
+                         (stream-chain (cons-stream (stream-cdr first-stream)
+                                                    rest-streams)))))))
+
+(define (stream-while predicate? stream)
+  (if (predicate? (stream-car stream))
+      (cons-stream (stream-car stream)
+                   (stream-while predicate?
+                                 (stream-cdr stream)))
+      the-empty-stream))
+
+(define int-pairs
+  (stream-chain 
+    (stream-map (lambda (i)
+                  (stream-map (lambda (j)
+                                (list j i))
+                              (stream-while (lambda (k)
+                                              (<= k i))
+                                            integers)))
+                integers)))
+
+(define (interleave s1 s2)
+  (if (stream-null? s1)
+      s2
+      (cons-stream (stream-car s1)
+                   (interleave s2 (stream-cdr s1)))))
+
+(define (pairs s t)
+  (cons-stream
+    (list (stream-car s) (stream-car t))
+    (interleave
+     (stream-map (lambda (x) (list (stream-car s) x))
+                 (stream-cdr t))
+     (pairs (stream-cdr s) (stream-cdr t)))))
+
+  
+(define int-pairs (pairs integers integers))
+
+(define prime-sum-pairs 
+  (stream-filter (lambda (pair)
+                   (prime? (+ (car pair) (cadr pair))))
+                 int-pairs))
