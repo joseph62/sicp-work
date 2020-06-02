@@ -85,3 +85,10 @@
   (stream-filter (lambda (pair)
                    (prime? (+ (car pair) (cadr pair))))
                  int-pairs))
+
+(define (integral integrand initial-value dt)
+  (define int
+    (cons-stream initial-value
+                 (add-stream (scale-stream integrand dt)
+                             int)))
+  int)
