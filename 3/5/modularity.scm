@@ -30,3 +30,15 @@
 (define pi
   (stream-map (lambda (p) (sqrt (/ 6 p)))
               (monte-carlo cesaro-stream 0 0)))
+
+(define (make-simplified-withdraw balance)
+  (lambda (amount)
+    (set! balance (- balance amount))
+    balance))
+
+(define (stream-withdraw balance amount-stream)
+  (cons-stream
+    balance
+    (stream-withdraw (- balance (stream-car amount-stream))
+                     (stream-cdr amount-stream))))
+
