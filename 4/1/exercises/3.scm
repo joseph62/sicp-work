@@ -1,4 +1,4 @@
 (define (eval exp env)
   (cond ((self-evaluating? exp) exp)
-		(else ((get 'eval (car exp)) (cdr exp) env))))
+		(else ((get 'eval (list (car exp) 'env)) (cdr exp) env))))
 
