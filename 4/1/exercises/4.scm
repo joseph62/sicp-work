@@ -1,4 +1,4 @@
-; data directed
+; Directly Defined
 (define (install-eval-and)
   (define first-exp (get 'first-exp '(exps)))
   (define rest-exp (get 'rest-exp '(exps)))
@@ -21,3 +21,35 @@
   (put 'eval '(or env) eval-or)
   'ok)
 
+; Derived Expressions
+(define (install-derived-eval-or)
+  (define (or->if exps)
+	(if (null? exps)
+	  'false
+	  (let ((first (first-exp exps))
+			(rest (rest-exps exps)))
+		(make-if first
+				 'true
+				 (or-if rest-exps)))))
+  (define (eval-or exps env)
+	(eval (or->if exps) env))
+
+  (put 'eval '(or env) eval-or)
+  'ok)
+
+(define (install-derived-eval-and)
+  (define make-if (get 'make-if '(exp exp exp)))
+  (define (and->if exps)
+	(if (null? exps)
+	  'true
+	  (let ((first (first-exp exps))
+			(rest (rest-exps exps)))
+		(make-if first
+				 (and-if rest-exps)
+				 'false))))
+
+  (define (eval-and exps env)
+	(eval (and->if exps) env))
+
+  (put 'eval '(and env) eval-and)
+  'ok)
