@@ -18,11 +18,14 @@
 
 (define (make-application procedure exps) (cons procedure exps))
 
+(define (make-lambda variables body)
+  (cons 'lambda (cons variables body)))
+
 (define (let->combination exp)
   (let ((bindings (let-bindings exp))
 		(body (let-body exp)))
 	(let ((variables (binding-variables bindings))
-		  (expressions (binding-values bindings)))
+		  (expressions (binding-exps bindings)))
 	  (make-application (make-lambda variables body)
 						expressions))))
 
