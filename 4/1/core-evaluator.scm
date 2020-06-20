@@ -155,7 +155,7 @@
 (define (cond-else-clause? clause)
   (eq? (cond-predicate clause) 'else))
 
-(define (cond-predicate clause (car clause)))
+(define (cond-predicate clause) (car clause))
 
 (define (cond-actions clause) (cdr (clause)))
 
