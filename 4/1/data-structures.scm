@@ -1,3 +1,6 @@
+(load "exercises/11.scm")
+(load "exercises/16.scm")
+
 (define (true? x)
   (not (eq? x false)))
 
@@ -5,7 +8,7 @@
   (eq? x false))
 
 (define (make-procedure parameters body env)
-  (list 'procedure parameters body env))
+  (list 'procedure parameters (scan-out-defines body) env))
 
 (define (compound-procedure? p)
   (tagged-list? p 'procedure))

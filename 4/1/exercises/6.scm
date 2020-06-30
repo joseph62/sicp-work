@@ -5,6 +5,9 @@
 
 (define (let-body exp) (cddr exp))
 
+(define (make-let bindings body)
+  (cons 'let (cons bindings body)))
+
 (define (first-binding bindings) (car bindings))
 
 (define (rest-bindings bindings) (cdr bindings))
