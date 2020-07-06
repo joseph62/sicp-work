@@ -9,8 +9,8 @@
 ; The incorrect answer method would be unacceptable and the 
 ; erroring solution seems somewhat confusing to a lisp user.
 
-; One way to arrive at the solution of allowing what looks
-; like the correct behavior would be to check for a definition
-; of a variable in outer scopes. If the variable is already defined
-; then define it again with the same value otherwise 
-; define it as '*unassigned*
+; One potential way to implement a simultaneous definition of values
+; would be to scan out the define statements, identify dependencies
+; that are not within nested procedure expressions and attempt to
+; reorder the identified expressions in a way that allows the definitions
+; to proceed without error.
