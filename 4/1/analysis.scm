@@ -1,3 +1,6 @@
+(load "running-evaluator.scm")
+(load "exercises/22.scm")
+
 (define (eval exp env)
   ((analyze exp) env))
 
@@ -12,6 +15,8 @@
         ((lambda? exp) (analyze-lambda exp))
         ((begin? exp) (analyze-seqence (begin-actions exp)))
         ((cond? exp) (analyze-if (cond->if exp)))
+        ; Exercise 4.22
+        ((let? exp) (analyze-application (let->application exp)))
         ((application? exp) (analyze-application exp))
         (else
           (error "Unknown expression type -- ANALYZE" exp))))
@@ -57,12 +62,12 @@
 
 (define (analyze-application exp)
   (let ((procedure (analyze (operator exp)))
-        (arguments (analyze (operands exp))))
+        (arguments (map analyze (operands exp))))
     (lambda (env)
       (execute-application (procedure env)
                            (map (lambda (argument) (argument env))
                                 arguments)))))
-(define (execute-application procedure arguments)
+(define (execute-application proc args)
   (cond ((primitive-procedure? proc)
          (apply-primitive-procedure proc args))
         ((compound-procedure? proc)
@@ -73,4 +78,4 @@
         (else
           (error
             "Unknown procedure type -- EXECUTE-APPLICATION"
-            proc))))
+            args))))
