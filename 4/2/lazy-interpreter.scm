@@ -18,6 +18,7 @@
         ((begin? exp)
          (eval-sequence (begin-actions exp) env))
         ((cond? exp) (eval (cond->if exp) env))
+        ((let? exp) (eval (let->combination exp) env))
         ((application? exp)
          (apply (actual-value (operator exp) env)
                 (operands exp)
@@ -63,4 +64,36 @@
       (announce-output output-prompt)
       (user-print output)))
   (driver-loop))
+
+(define (delay-it exp env)
+  (list 'thunk exp env))
+
+(define (force-it obj)
+  (if (thunk? obj)
+      (actual-value (thunk-exp obj) (thunk-env obj))
+      obj))
+
+(define (thunk? obj)
+  (tagged-list? obj 'thunk))
+
+(define (thunk-exp thunk) (cadr thunk))
+
+(define (thunk-env thunk) (caddr thunk))
+
+(define (evaluated-thunk? obj)
+  (tagged-list? obj 'evaluated-thunk))
+
+(define (thunk-value evaluated-thunk) (cadr evaluated-thunk))
+
+(define (force-it obj)
+  (cond ((thunk? obj)
+         (let ((result (actual-value
+                         (thunk-exp obj)
+                         (thunk-env obj))))
+         (set-car! obj 'evaluated-thunk)
+         (set-car! (cdr obj) result)
+         (set-cdr! (cdr obj) '())))
+        ((evaluated-thunk? obj) (thunk-value obj))
+        (else obj)))
+
 
