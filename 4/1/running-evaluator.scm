@@ -22,6 +22,7 @@
         (list 'cdr cdr)
         (list 'cons cons)
         (list 'null? null?)
+        (list '+ +)
         (list 'map map)))
 
 (define (primitive-procedure-names)
