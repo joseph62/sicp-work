@@ -46,8 +46,8 @@
 
 (define (eval-sequence exps env)
   (cond ((last-exp? exps) (eval (first-exp exps) env))
-        ((else (eval (first-exp exps) env)
-               (eval-sequence (rest-exps exps) env)))))
+        (else (eval (first-exp exps) env)
+               (eval-sequence (rest-exps exps) env))))
 
 (define (eval-assignment exp env)
   (set-variable-value! (definition-variable exp)
