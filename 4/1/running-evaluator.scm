@@ -22,7 +22,11 @@
         (list 'cdr cdr)
         (list 'cons cons)
         (list 'null? null?)
+        (list 'display display)
+        (list 'newline newline)
         (list '+ +)
+        (list '/ /)
+        (list '= =)
         (list 'map map)))
 
 (define (primitive-procedure-names)

@@ -12,6 +12,11 @@
 ;;; L-eval value:
 ; 0
 ; count initialized to 0 and the id operation has not yet been applied
+; WRONG! The actual answer is 1...
+; I believe the reason the answer is 1 and not the 0 that I thought
+; has to do with exactly what lazy evaluation is doing here. The outer
+; id actually does run which increments the count by one. The second one
+; is still not evaluated though.
 
 ;;; L-eval input:
 ; w
