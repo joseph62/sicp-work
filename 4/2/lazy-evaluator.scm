@@ -1,5 +1,6 @@
-(load "running-evaluator.scm")
-(load "exercises/6.scm")
+(load "running-evaluator")
+(load "exercises/6")
+(load "exercises/33")
 
 (define (actual-value exp env)
   (force-it (eval exp env)))
@@ -7,7 +8,7 @@
 (define (eval exp env)
   (cond ((self-evaluating? exp) exp)
         ((variable? exp) (lookup-variable-value exp env))
-        ((quoted? exp) (text-of-quotation exp))
+        ((quoted? exp) (eval-quotation exp env))
         ((assignment? exp) (eval-assignment exp env))
         ((definition? exp) (eval-definition exp env))
         ((if? exp) (eval-if exp env))
@@ -96,3 +97,4 @@
         ((evaluated-thunk? obj) (thunk-value obj))
         (else obj)))
 
+(define the-global-environment (setup-environment))
