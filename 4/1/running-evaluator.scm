@@ -18,15 +18,14 @@
 (define (primitive-implementation proc) (cadr proc))
 
 (define primitive-procedures
-  (list (list 'car car)
-        (list 'cdr cdr)
-        (list 'cons cons)
-        (list 'null? null?)
+  (list (list 'null? null?)
         (list 'display display)
         (list 'newline newline)
         (list '+ +)
+        (list '* *)
         (list '/ /)
         (list '= =)
+        (list '- -)
         (list 'map map)))
 
 (define (primitive-procedure-names)
