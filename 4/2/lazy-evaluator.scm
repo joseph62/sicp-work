@@ -1,5 +1,6 @@
 (load "running-evaluator")
 (load "exercises/6")
+(load "exercises/30")
 (load "exercises/33")
 
 (define (actual-value exp env)
