@@ -1,7 +1,7 @@
 (define (amb . possibilities)
   (if (null? possibilities)
       ()
-      (car possibilites))) ; pretend this returns some possibility instead of just the first
+      (car possibilities))) 
 
 (list (amb 1 2 3) (amb 'a 'b))
 ; Possible values:
