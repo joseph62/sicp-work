@@ -42,6 +42,12 @@
   (cooper 4) 
   (miller 5))
 
-; Four solutions if the 
+'((baker 1) 
+  (cooper 2)
+  (smith 3)
+  (fletcher 4) 
+  (miller 5))
+
+; Five solutions if the 
 ; (require (not (= (abs (- fletcher smith)) 1)))
 ; requirement is removed.
