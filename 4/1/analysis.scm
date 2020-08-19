@@ -38,6 +38,13 @@
       (set-variable-value! var (vproc env) env)
       'ok)))
 
+(define (analyze-definition exp)
+  (let ((var (definition-variable exp))
+        (vproc (analyze (definition-value exp))))
+    (lambda (env)
+      (define-variable! var (vproc env) env)
+      'ok)))
+
 (define (analyze-if exp)
   (let ((predicate (analyze (if-predicate exp)))
         (consequent (analyze (if-consequent exp)))
