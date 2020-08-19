@@ -13,7 +13,7 @@
         ((definition? exp) (analyze-definition exp))
         ((if? exp) (analyze-if exp))
         ((lambda? exp) (analyze-lambda exp))
-        ((begin? exp) (analyze-seqence (begin-actions exp)))
+        ((begin? exp) (analyze-sequence (begin-actions exp)))
         ((cond? exp) (analyze-if (cond->if exp)))
         ; Exercise 4.22
         ((let? exp) (analyze-application (let->application exp)))
