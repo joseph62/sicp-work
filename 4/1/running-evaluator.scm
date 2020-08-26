@@ -26,6 +26,10 @@
         (list '/ /)
         (list '= =)
         (list '- -)
+        (list 'even? even?)
+        (list 'cons cons)
+        (list 'car car)
+        (list 'cdr cdr)
         (list 'map map)))
 
 (define (primitive-procedure-names)

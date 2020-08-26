@@ -1,4 +1,5 @@
 (load "analysis")
+(load "exercises/52")
 
 (define (amb? exp) (tagged-list? exp 'amb))
 
@@ -18,6 +19,7 @@
         ((lambda? exp) (analyze-lambda exp))
         ((begin? exp) (analyze-sequence (begin-actions exp)))
         ((cond? exp) (analyze-if (cond->if exp)))
+        ((if-fail? exp) (analyze-if-fail exp))
         ; Exercise 4.22
         ((let? exp) (analyze-application (let->application exp)))
         ((amb? exp) (analyze-amb exp))
@@ -81,8 +83,8 @@
     (lambda (env succeed fail)
       (vproc env
              (lambda (val fail2)
-               (define var val env)
-               ('succeed 'ok fail2))
+               (define-variable! var val env)
+               (succeed 'ok fail2))
              fail))))
 
 (define (analyze-assignment exp)
@@ -144,3 +146,47 @@
           (error
             "Unknown procedure type -- EXECUTE_APPLICATION"
             proc))))
+
+(define (analyze-amb exp)
+  (let ((cprocs (map analyze (amb-choices exp))))
+    (lambda (env succeed fail)
+      (define (try-next choices)
+        (if (null? choices)
+            (fail)
+            ((car choices) env
+                           succeed
+                           (lambda ()
+                             (try-next (cdr choices))))))
+      (try-next cprocs))))
+
+(define input-prompt ";;; Amb-Eval input:")
+(define output-prompt ";;; Amb-Eval value:")
+
+(define (driver-loop)
+  (define (internal-loop try-again)
+    (prompt-for-input input-prompt)
+    (let ((input (read)))
+      (if (eq? input 'try-again)
+          (try-again)
+          (begin
+            (newline)
+            (display ";;; Starting a new problem ")
+            (ambeval input
+                     the-global-environment
+                     ;; ambeval success
+                     (lambda (val next-alternative)
+                       (announce-output output-prompt)
+                       (user-print val)
+                       (internal-loop next-alternative))
+                     ;; ambeval failure
+                     (lambda ()
+                       (announce-output
+                         ";;; There are no more values of")
+                       (user-print input)
+                       (driver-loop)))))))
+  (internal-loop
+    (lambda ()
+      (newline)
+      (display ";;; There is no current problem")
+      (driver-loop))))
+
