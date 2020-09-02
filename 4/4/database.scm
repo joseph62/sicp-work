@@ -16,10 +16,12 @@
     (address (Tweakit Lem E) (Boston (Bay State Road) 22))
     (job (Tweakit Lem E) (computer technician))
     (salary (Tweakit Lem E) 25000)
+    (supervisor (Tweakit Lem E) (Bitdiddle Ben))
 
     (address (Reasoner Louis) (Slumerville (Pine Tree Road) 80))
     (job (Reasoner Louis) (computer programmer trainee))
     (salary (Reasoner Louis) 30000)
+    (supervisor (Reasoner Louis) (Hacker Alyssa P))
 
     (supervisor (Bitdiddle Ben) (Warbucks Oliver))
     (address (Warbucks Oliver) (Swellesley (Top Head Road)))
