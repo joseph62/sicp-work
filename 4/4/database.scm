@@ -1,50 +1,79 @@
-(define microshaft-employee-database
-  '((address (Bitdiddle Ben) (Slumerville (Ridge Road) 10))
-    (job (Bitdiddle Ben) (computer wizard))
-    (salary (Bitdiddle Ben) 60000)
+(define THE-ASSERTIONS the-empty-stream)
 
-    (address (Hacker Alyssa P) (Cambridge (Mass Ave) 78))
-    (job (Hacker Alyssa P) (computer programmer))
-    (salary (Hacker Alyssa P) 40000)
-    (supervisor (Hacker Alyssa P) (Bitdiddle Ben))
+(define (fetch-assertions pattern frame)
+  (if (use-index? pattern)
+    (get-indexed-assertions pattern)
+    (get-all-assertions)))
 
-    (address (Fect Cy D) (Cambridge (Ames Street) 3))
-    (job (Fect Cy D) (computer programmer))
-    (salary (Fect Cy D) 35000)
-    (supervisor (Fect Cy D) (Bitdiddle Ben))
+(define (get-all-assertions) THE-ASSERTIONS)
 
-    (address (Tweakit Lem E) (Boston (Bay State Road) 22))
-    (job (Tweakit Lem E) (computer technician))
-    (salary (Tweakit Lem E) 25000)
-    (supervisor (Tweakit Lem E) (Bitdiddle Ben))
+(define (get-indexed-assertions pattern)
+  (get-stream (index-key-of pattern) 'assertion-stream))
 
-    (address (Reasoner Louis) (Slumerville (Pine Tree Road) 80))
-    (job (Reasoner Louis) (computer programmer trainee))
-    (salary (Reasoner Louis) 30000)
-    (supervisor (Reasoner Louis) (Hacker Alyssa P))
+(define (get-stream key1 key2)
+  (let ((s (get key1 key2)))
+    (if s s the-empty-stream)))
 
-    (supervisor (Bitdiddle Ben) (Warbucks Oliver))
-    (address (Warbucks Oliver) (Swellesley (Top Head Road)))
-    (job (Warbucks Oliver) (administration big wheel))
-    (salary (Warbucks Oliver) (150000))
+(define THE-RULES the-empty-stream)
 
-    (address (Scrooge Eben) (Weston (Shady Lane) 10))
-    (job (Scrooge Eben) (accounting chief accountant))
-    (salary (Scrooge Eben) 75000)
-    (supervisor (Scrooge Eben) (Warbucks Oliver))
+(define (fetch-rules pattern frame)
+  (if (use-index? pattern)
+    (get-indexed-rules pattern)
+    (get-all-rules)))
 
-    (address (Cratchet Robert) (Allston (N Harvard Street) 16))
-    (job (Cratchet Robert) (accounting screvener))
-    (salary (Cratchet Robert) 18000)
-    (supervisor (Cratchet Robert) (Scrooge Eben))
+(define (get-all-rules) THE-RULES)
 
-    (address (Aull DeWitt) (Slumerville (Onion Square) 5))
-    (job (Aull DeWitt) (administration secretary))
-    (salary (Aull DeWitt) 25000)
-    (supervisor (Aull DeWitt) (Warbucks Oliver))
+(define (get-indexed-rules pattern)
+  (stream-append
+    (get-stream (index-key-of pattern) 'rule-stream)
+    (get-stream '? 'rule-stream)))
 
-    (can-do-job (computer wizard) (computer programmer))
-    (can-do-job (computer wizard) (computer technician))
-    (can-do-job (computer programmer) (computer programmer trainee))
-    (can-do-job (administration secretary) (administration big wheel))))
+(define (add-rule-or-assertion! assertion)
+  (if (rule? assertion)
+    (add-rule! assertion)
+    (add-assertion! assertion)))
 
+(define (add-assertion! assertion)
+  (store-assertion-in-index assertion)
+  (let ((old-assertions THE-ASSERTIONS))
+    (set! THE-ASSERTSIONS
+      (cons-stream assertion old-assertions))
+    'ok))
+
+(define (add-rule! rule)
+  (store-rule-in-index rule)
+  (let ((old-rules THE-RULES))
+    (set! THE-RULES (cons-stream rule old-rules))
+    'ok))
+
+(define (store-assertion-in-index assertion)
+  (if (indexable? assertion)
+    (let* ((key (index-key-of assertion))
+           (current-assertion-stream 
+             (get-stream key 'assertion-stream)))
+      (put key
+           'assertion-stream
+           (cons-stream assertion
+                        current-assertion-stream)))))
+
+(define (store-rule-in-index rule)
+  (let ((pattern (conclusion rule)))
+    (if (indexable? pattern)
+      (let* ((key (index-key-of pattern))
+             (current-rule-stream
+               (get-stream key 'rule-stream)))
+        (put key
+             'rule-stream
+             (cons-stream rule
+                          current-rule-stream))))))
+
+(define (indexable? pat)
+  (or (constant-symbol? (car pat))
+      (var? (car pat))))
+
+(define (index-key-of pat)
+  (let ((key (car pat)))
+    (if (var? key) '? key)))
+
+(define (use-index? pat)
+  (constant-symbol? (car pat)))
