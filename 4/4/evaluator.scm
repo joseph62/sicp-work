@@ -1,3 +1,10 @@
+(load "pattern-matching")
+(load "frames-and-bindings")
+(load "driver-loop")
+(load "query-syntax")
+(load "rules-and-unification")
+(load "stream-operations")
+
 (define (qeval query frame-stream)
   (let ((qproc (get (type query) 'qeval)))
     (if qproc
