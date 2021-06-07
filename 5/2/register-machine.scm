@@ -1,14 +1,16 @@
-(define (make-machine register-names operations controller)
-  '(machine smile))
+(load "machine-model")
 
-(define (set-register-contents! machine-model register-name value)
-  'done)
-
-(define (get-register-contents machine-model register-name)
-  'value)
-
-(define (start machine-model)
-  'done)
+; (define (make-machine register-names operations controller)
+  ; '(machine smile))
+; 
+; (define (set-register-contents! machine-model register-name value)
+  ; 'done)
+; 
+; (define (get-register-contents machine-model register-name)
+  ; 'value)
+; 
+; (define (start machine-model)
+  ; 'done)
 
 ; Example of simulator interface usage
 
